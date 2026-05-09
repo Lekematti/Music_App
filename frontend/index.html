@@ -3,11 +3,151 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Hello World</title>
-	<link rel="stylesheet" href="./style.css">
+	<title>Music App - Home</title>
+	<link rel="stylesheet" href="./css/style.css">
+	<script src="./js/auth.js"></script>
+	<script src="./js/menu.js"></script>
 </head>
 <body>
-	<h1 id="helloworld">Hello world</h1>
-	<script src="./script.js" type="module"></script>
+	<header class="top-bar">
+		<div class="logo">
+			<img src="./assets/icons/logo.png" alt="Logo">
+		</div>
+		<div class="search-bar">
+			<input type="text" placeholder="Search songs, artists, albums...">
+			<button class="search-icon"><img src="./assets/icons/search.png" alt="Search"></button>
+		</div>
+		<div class="user-nav">
+			<button id="menu-btn" class="menu-btn"><img src="./assets/icons/list.png" alt="Menu"></button>
+		</div>
+	</header>
+
+	<!-- Side Menu -->
+	<aside id="side-menu" class="side-menu">
+		<div class="side-menu-header">
+			<h2>Menu</h2>
+			<button id="close-btn" class="close-btn">X</button>
+		</div>
+		<ul class="side-menu-list">
+			<li><a href="./pages/profile.html"><img src="./assets/icons/profile.png" alt="Profile" class="menu-icon"> Profile</a></li>
+			<li><a href="#"><img src="./assets/icons/settings.png" alt="Settings" class="menu-icon"> Settings</a></li>
+		</ul>
+	</aside>
+
+	<main class="content">
+		<!-- Top 10 -->
+		<section class="music-category">
+			<div class="section-header">
+				<h2>Top 10</h2>
+				<a href="./pages/top10.html" class="view-all">View all</a>
+			</div>
+			<div class="horizontal-list">
+				<div class="card">
+					<div class="card-icon">🎵</div>
+					<h3>Song Name</h3>
+					<p>Artist</p>
+					<div class="stars">
+						<img src="./assets/icons/star.png" alt="Star"><img src="./assets/icons/star.png" alt="Star"><img src="./assets/icons/star.png" alt="Star"><img src="./assets/icons/star.png" alt="Star"><img src="./assets/icons/star.png" alt="Star">
+					</div>
+				</div>
+				<div class="card">
+					<div class="card-icon">🎵</div>
+					<h3>Song Name</h3>
+					<p>Artist</p>
+					<div class="stars">
+						<img src="./assets/icons/star.png" alt="Star"><img src="./assets/icons/star.png" alt="Star"><img src="./assets/icons/star.png" alt="Star"><img src="./assets/icons/star.png" alt="Star"><img src="./assets/icons/star.png" alt="Star">
+					</div>
+				</div>
+				<div class="card">
+					<div class="card-icon">🎵</div>
+					<h3>Song Name</h3>
+					<p>Artist</p>
+					<div class="stars">
+						<img src="./assets/icons/star.png" alt="Star"><img src="./assets/icons/star.png" alt="Star"><img src="./assets/icons/star.png" alt="Star"><img src="./assets/icons/star.png" alt="Star"><img src="./assets/icons/star.png" alt="Star">
+					</div>
+				</div>
+				<div class="card">
+					<div class="card-icon">🎵</div>
+					<h3>Song Name</h3>
+					<p>Artist</p>
+					<div class="stars">
+						<img src="./assets/icons/star.png" alt="Star"><img src="./assets/icons/star.png" alt="Star"><img src="./assets/icons/star.png" alt="Star"><img src="./assets/icons/star.png" alt="Star"><img src="./assets/icons/star.png" alt="Star">
+					</div>
+				</div>
+				<div class="card">
+					<div class="card-icon">🎵</div>
+					<h3>Song Name</h3>
+					<p>Artist</p>
+					<div class="stars">
+						<img src="./assets/icons/star.png" alt="Star"><img src="./assets/icons/star.png" alt="Star"><img src="./assets/icons/star.png" alt="Star"><img src="./assets/icons/star.png" alt="Star"><img src="./assets/icons/star.png" alt="Star">
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<!-- Past Downloads -->
+		<section class="music-category">
+			<div class="section-header">
+				<h2>Past Downloads</h2>
+				<a href="./pages/past-downloads.html" class="view-all">View all</a>
+			</div>
+			<div class="horizontal-list">
+				<div class="list-item">
+					<div class="item-icon">🎵</div>
+					<div class="item-info">
+						<h4>Song Name</h4>
+						<p>Artist</p>
+					</div>
+				</div>
+				<div class="list-item">
+					<div class="item-icon">🎵</div>
+					<div class="item-info">
+						<h4>Song Name</h4>
+						<p>Artist</p>
+					</div>
+				</div>
+				<div class="list-item">
+					<div class="item-icon">🎵</div>
+					<div class="item-info">
+						<h4>Song Name</h4>
+						<p>Artist</p>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<!-- New Downloads -->
+		<section class="music-category">
+			<div class="section-header">
+				<h2>New Downloads</h2>
+				<a href="./pages/new-downloads.html" class="view-all">View all</a>
+			</div>
+			<div class="horizontal-list">
+				<div class="list-item">
+					<div class="item-icon">🎵</div>
+					<div class="item-info">
+						<h4>Song Name</h4>
+						<p>Artist</p>
+					</div>
+				</div>
+				<div class="list-item">
+					<div class="item-icon">🎵</div>
+					<div class="item-info">
+						<h4>Song Name</h4>
+						<p>Artist</p>
+					</div>
+				</div>
+				<div class="list-item">
+					<div class="item-icon">🎵</div>
+					<div class="item-info">
+						<h4>Song Name</h4>
+						<p>Artist</p>
+					</div>
+				</div>
+			</div>
+		</section>
+	</main>
+
+	<script src="./js/script.js" type="module"></script>
 </body>
 </html>

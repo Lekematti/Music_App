@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Music App - Oma Sivu</title>
+	<link rel="stylesheet" href="../css/style.css">
+	<script src="../js/auth.js"></script>
+</head>
+<body>
+	<header class="top-bar">
+		<div class="logo">
+			<a href="../index.html"><img src="../assets/icons/logo.png" alt="Logo"></a>
+		</div>
+		<div class="search-bar">
+			<input type="text" placeholder="Hae kappaleita, artisteja, albumeita...">
+			<button class="search-icon"><img src="../assets/icons/search.png" alt="Search"></button>
+		</div>
+		<div class="user-nav" style="display: flex; align-items: center;">
+			<span style="color: #aaa; margin-right: 10px; font-size: 14px;">Oma sivu</span>
+			<a href="#"><img src="../assets/icons/profile.png" alt="Profile" style="width: 24px; filter: invert(1);"></a>
+		</div>
+	</header>
+
+	<main class="profile-container">
+		<aside class="profile-sidebar">
+			<ul>
+				<li class="active">
+					<img src="../assets/icons/list.png" alt="Omat julkaisut" class="sidebar-icon">
+					Omat julkaisut
+				</li>
+				<li>
+					<img src="../assets/icons/settings.png" alt="Vaihda salasana" class="sidebar-icon lock-icon">
+					Vaihda salasana
+				</li>
+				<li>
+					<img src="../assets/icons/profile.png" alt="Vaihda käyttäjänimi" class="sidebar-icon">
+					Vaihda käyttäjänimi
+				</li>
+				<li>
+					<img src="../assets/icons/settings.png" alt="Vaihda sähköposti" class="sidebar-icon email-icon">
+					Vaihda sähköposti
+				</li>
+			</ul>
+			
+			<div style="padding: 20px; margin-top: 20px; border-top: 1px solid #2a2a2a;">
+				<button id="logout-btn" style="width: 100%; padding: 10px; background-color: #16171b; border: 1px solid #d9534f; color: #d9534f; border-radius: 4px; cursor: pointer; transition: 0.2s;">
+					Kirjaudu ulos
+				</button>
+			</div>
+		</aside>
+
+		<section class="profile-content">
+			<h2>Omat julkaisut</h2>
+			<div class="publication-list">
+				
+				<div class="publication-item">
+					<div class="pub-icon">
+						<img src="../assets/icons/m.png" alt="Music" style="width: 20px; filter: invert(1);">
+					</div>
+					<div class="pub-info">
+						<h4>Oma kappale 1</h4>
+						<p>Julkaistu: 1.1.2024</p>
+					</div>
+					<div class="pub-stars">
+						<img src="../assets/icons/star.png" alt="Star"><img src="../assets/icons/star.png" alt="Star"><img src="../assets/icons/star.png" alt="Star"><img src="../assets/icons/star.png" alt="Star"><img src="../assets/icons/star.png" alt="Star">
+					</div>
+					<button class="pub-more">⋮</button>
+				</div>
+                
+				<div class="publication-item">
+					<div class="pub-icon">
+						<img src="../assets/icons/m.png" alt="Music" style="width: 20px; filter: invert(1);">
+					</div>
+					<div class="pub-info">
+						<h4>Oma kappale 2</h4>
+						<p>Julkaistu: 15.12.2023</p>
+					</div>
+					<div class="pub-stars">
+						<img src="../assets/icons/star.png" alt="Star"><img src="../assets/icons/star.png" alt="Star"><img src="../assets/icons/star.png" alt="Star"><img src="../assets/icons/star.png" alt="Star"><img src="../assets/icons/black.png" alt="Empty Star" style="filter: invert(0.3);">
+					</div>
+					<button class="pub-more">⋮</button>
+				</div>
+
+				<div class="publication-item">
+					<div class="pub-icon">
+						<img src="../assets/icons/m.png" alt="Music" style="width: 20px; filter: invert(1);">
+					</div>
+					<div class="pub-info">
+						<h4>Oma kappale 3</h4>
+						<p>Julkaistu: 2.12.2023</p>
+					</div>
+					<div class="pub-stars">
+						<img src="../assets/icons/star.png" alt="Star"><img src="../assets/icons/star.png" alt="Star"><img src="../assets/icons/star.png" alt="Star"><img src="../assets/icons/star.png" alt="Star"><img src="../assets/icons/star.png" alt="Star">
+					</div>
+					<button class="pub-more">⋮</button>
+				</div>
+
+				<div class="publication-item">
+					<div class="pub-icon">
+						<img src="../assets/icons/m.png" alt="Music" style="width: 20px; filter: invert(1);">
+					</div>
+					<div class="pub-info">
+						<h4>Oma kappale 4</h4>
+						<p>Julkaistu: 20.11.2023</p>
+					</div>
+					<div class="pub-stars">
+						<img src="../assets/icons/star.png" alt="Star"><img src="../assets/icons/star.png" alt="Star"><img src="../assets/icons/star.png" alt="Star"><img src="../assets/icons/star.png" alt="Star"><img src="../assets/icons/black.png" alt="Empty Star" style="filter: invert(0.3);">
+					</div>
+					<button class="pub-more">⋮</button>
+				</div>
+
+			</div>
+		</section>
+	</main>
+
+	<script>
+		// Logout toiminto
+		const logoutBtn = document.getElementById('logout-btn');
+		if (logoutBtn) {
+			logoutBtn.addEventListener('click', () => {
+				localStorage.removeItem('isLoggedIn');
+				window.location.href = 'login.html';
+			});
+		}
+	</script>
+</body>
+</html>
