@@ -120,7 +120,7 @@
 		if (logoutBtn) {
 			logoutBtn.addEventListener('click', () => {
 				localStorage.removeItem('isLoggedIn');
-				window.location.href = 'login.html';
+				globalThis.location.href = 'login.html';
 			});
 		}
 	</script>
