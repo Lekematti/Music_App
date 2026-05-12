@@ -3,9 +3,10 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Music App - Oma Sivu</title>
+	<title>Music App - Profile</title>
 	<link rel="stylesheet" href="../css/style.css">
 	<script src="../js/auth.js"></script>
+    <script src="../js/menu.js"></script>
 </head>
 <body>
 	<header class="top-bar">
@@ -13,54 +14,54 @@
 			<a href="../index.html"><img src="../assets/icons/logo.png" alt="Logo"></a>
 		</div>
 		<div class="search-bar">
-			<input type="text" placeholder="Hae kappaleita, artisteja, albumeita...">
+			<input type="text" placeholder="Search for songs, artists, albums...">
 			<button class="search-icon"><img src="../assets/icons/search.png" alt="Search"></button>
 		</div>
-		<div class="user-nav" style="display: flex; align-items: center;">
-			<span style="color: #aaa; margin-right: 10px; font-size: 14px;">Oma sivu</span>
-			<a href="#"><img src="../assets/icons/profile.png" alt="Profile" style="width: 24px; filter: invert(1);"></a>
-		</div>
+		<div class="user-nav">
+            <button id="menu-btn" class="menu-btn"><img src="../assets/icons/list.png" alt="Menu"></button>
+        </div>
 	</header>
 
 	<main class="profile-container">
 		<aside class="profile-sidebar">
-			<ul>
-				<li class="active">
-					<img src="../assets/icons/list.png" alt="Omat julkaisut" class="sidebar-icon">
-					Omat julkaisut
+			<ul id="profile-nav">
+				<li class="active" data-target="publications-section">
+					<img src="../assets/icons/profile.png" alt="My Publications" class="sidebar-icon">
+					Publications
 				</li>
-				<li>
-					<img src="../assets/icons/settings.png" alt="Vaihda salasana" class="sidebar-icon lock-icon">
-					Vaihda salasana
+				<li data-target="password-section">
+					<img src="../assets/icons/settings.png" alt="Change password" class="sidebar-icon lock-icon">
+					Change password
 				</li>
-				<li>
-					<img src="../assets/icons/profile.png" alt="Vaihda käyttäjänimi" class="sidebar-icon">
-					Vaihda käyttäjänimi
+				<li data-target="username-section">
+					<img src="../assets/icons/settings.png" alt="Change username" class="sidebar-icon">
+					Change username
 				</li>
-				<li>
-					<img src="../assets/icons/settings.png" alt="Vaihda sähköposti" class="sidebar-icon email-icon">
-					Vaihda sähköposti
+				<li data-target="email-section">
+					<img src="../assets/icons/settings.png" alt="Change email" class="sidebar-icon email-icon">
+					Change email
 				</li>
 			</ul>
 			
 			<div style="padding: 20px; margin-top: 20px; border-top: 1px solid #2a2a2a;">
 				<button id="logout-btn" style="width: 100%; padding: 10px; background-color: #16171b; border: 1px solid #d9534f; color: #d9534f; border-radius: 4px; cursor: pointer; transition: 0.2s;">
-					Kirjaudu ulos
+					Logout
 				</button>
 			</div>
 		</aside>
 
 		<section class="profile-content">
-			<h2>Omat julkaisut</h2>
-			<div class="publication-list">
-				
-				<div class="publication-item">
+            <div id="publications-section" class="profile-tab" style="display: block;">
+			    <h2>Publications</h2>
+			    <div class="publication-list">
+				    
+				    <div class="publication-item" onclick="window.location.href='song.html?id=1'" style="cursor: pointer;" role="button" tabindex="0" onkeydown="if(event.key==='Enter') this.click();">
 					<div class="pub-icon">
 						<img src="../assets/icons/m.png" alt="Music" style="width: 20px; filter: invert(1);">
 					</div>
 					<div class="pub-info">
-						<h4>Oma kappale 1</h4>
-						<p>Julkaistu: 1.1.2024</p>
+						<h4>Song Title</h4>
+						<p>Published: 1.1.2024</p>
 					</div>
 					<div class="pub-stars">
 						<img src="../assets/icons/star.png" alt="Star"><img src="../assets/icons/star.png" alt="Star"><img src="../assets/icons/star.png" alt="Star"><img src="../assets/icons/star.png" alt="Star"><img src="../assets/icons/star.png" alt="Star">
@@ -68,13 +69,13 @@
 					<button class="pub-more">⋮</button>
 				</div>
                 
-				<div class="publication-item">
+				<div class="publication-item" onclick="window.location.href='song.html?id=1'" style="cursor: pointer;" role="button" tabindex="0" onkeydown="if(event.key==='Enter') this.click();">
 					<div class="pub-icon">
 						<img src="../assets/icons/m.png" alt="Music" style="width: 20px; filter: invert(1);">
 					</div>
 					<div class="pub-info">
-						<h4>Oma kappale 2</h4>
-						<p>Julkaistu: 15.12.2023</p>
+						<h4>Song Title</h4>
+						<p>Published: 15.12.2023</p>
 					</div>
 					<div class="pub-stars">
 						<img src="../assets/icons/star.png" alt="Star"><img src="../assets/icons/star.png" alt="Star"><img src="../assets/icons/star.png" alt="Star"><img src="../assets/icons/star.png" alt="Star"><img src="../assets/icons/black.png" alt="Empty Star" style="filter: invert(0.3);">
@@ -82,13 +83,13 @@
 					<button class="pub-more">⋮</button>
 				</div>
 
-				<div class="publication-item">
+				<div class="publication-item" onclick="window.location.href='song.html?id=1'" style="cursor: pointer;" role="button" tabindex="0" onkeydown="if(event.key==='Enter') this.click();">
 					<div class="pub-icon">
 						<img src="../assets/icons/m.png" alt="Music" style="width: 20px; filter: invert(1);">
 					</div>
 					<div class="pub-info">
-						<h4>Oma kappale 3</h4>
-						<p>Julkaistu: 2.12.2023</p>
+						<h4>Song Title</h4>
+						<p>Published: 2.12.2023</p>
 					</div>
 					<div class="pub-stars">
 						<img src="../assets/icons/star.png" alt="Star"><img src="../assets/icons/star.png" alt="Star"><img src="../assets/icons/star.png" alt="Star"><img src="../assets/icons/star.png" alt="Star"><img src="../assets/icons/star.png" alt="Star">
@@ -96,26 +97,96 @@
 					<button class="pub-more">⋮</button>
 				</div>
 
-				<div class="publication-item">
+				<div class="publication-item" onclick="window.location.href='song.html?id=1'" style="cursor: pointer;" role="button" tabindex="0" onkeydown="if(event.key==='Enter') this.click();">
 					<div class="pub-icon">
 						<img src="../assets/icons/m.png" alt="Music" style="width: 20px; filter: invert(1);">
 					</div>
 					<div class="pub-info">
-						<h4>Oma kappale 4</h4>
-						<p>Julkaistu: 20.11.2023</p>
+						<h4>Song Title</h4>
+						<p>Published: 20.11.2023</p>
 					</div>
 					<div class="pub-stars">
 						<img src="../assets/icons/star.png" alt="Star"><img src="../assets/icons/star.png" alt="Star"><img src="../assets/icons/star.png" alt="Star"><img src="../assets/icons/star.png" alt="Star"><img src="../assets/icons/black.png" alt="Empty Star" style="filter: invert(0.3);">
 					</div>
 					<button class="pub-more">⋮</button>
 				</div>
+    </div>
+            </div>
 
-			</div>
+            <!-- Change Password Section -->
+            <div id="password-section" class="profile-tab" style="display: none;">
+                <h2>Change Password</h2>
+                <form class="auth-form" style="max-width: 400px; margin-top: 20px;">
+                    <div class="form-group">
+                        <label for="current-password">Current Password</label>
+                        <input type="password" id="current-password" placeholder="Enter current password" required style="width: 100%; padding: 10px; background: #16171b; border: 1px solid #2a2a2a; color: white;">
+                    </div>
+                    <div class="form-group" style="margin-top: 15px;">
+                        <label for="new-password">New Password</label>
+                        <input type="password" id="new-password" placeholder="Enter new password" required style="width: 100%; padding: 10px; background: #16171b; border: 1px solid #2a2a2a; color: white;">
+                    </div>
+                    <button type="submit" class="primary-btn" style="margin-top: 20px;">Update Password</button>
+                </form>
+            </div>
+
+            <!-- Change Username Section -->
+            <div id="username-section" class="profile-tab" style="display: none;">
+                <h2>Change Username</h2>
+                <form class="auth-form" style="max-width: 400px; margin-top: 20px;">
+                    <div class="form-group">
+                        <label for="new-username">New Username</label>
+                        <input type="text" id="new-username" placeholder="Enter new username" required style="width: 100%; padding: 10px; background: #16171b; border: 1px solid #2a2a2a; color: white;">
+                    </div>
+                    <button type="submit" class="primary-btn" style="margin-top: 20px;">Update Username</button>
+                </form>
+            </div>
+
+            <!-- Change Email Section -->
+            <div id="email-section" class="profile-tab" style="display: none;">
+                <h2>Change Email</h2>
+                <form class="auth-form" style="max-width: 400px; margin-top: 20px;">
+                    <div class="form-group">
+                        <label for="new-email">New Email Address</label>
+                        <input type="email" id="new-email" placeholder="Enter new email" required style="width: 100%; padding: 10px; background: #16171b; border: 1px solid #2a2a2a; color: white;">
+                    </div>
+                    <button type="submit" class="primary-btn" style="margin-top: 20px;">Update Email</button>
+                </form>
+            </div>
 		</section>
 	</main>
 
 	<script>
-		// Logout toiminto
+        // Tab switching logic
+        const navItems = document.querySelectorAll('#profile-nav li');
+        const sections = document.querySelectorAll('.profile-tab');
+
+        navItems.forEach(item => {
+            item.addEventListener('click', () => {
+                // Reset all nav items: remove active class and set icon to settings
+                navItems.forEach(nav => {
+                    nav.classList.remove('active');
+                    const img = nav.querySelector('img.sidebar-icon');
+                    if (img) img.src = '../assets/icons/settings.png';
+                });
+                
+                // Set the clicked item as active and change its icon to profile
+                item.classList.add('active');
+                const activeImg = item.querySelector('img.sidebar-icon');
+                if (activeImg) activeImg.src = '../assets/icons/profile.png';
+
+                // Hide all sections
+                sections.forEach(sec => sec.style.display = 'none');
+
+                // Show selected section
+                const targetId = item.dataset.target;
+                if (targetId) {
+                    const targetEl = document.getElementById(targetId);
+                    if (targetEl) targetEl.style.display = 'block';
+                }
+            });
+        });
+
+		// Logout function
 		const logoutBtn = document.getElementById('logout-btn');
 		if (logoutBtn) {
 			logoutBtn.addEventListener('click', () => {

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <script src="../js/menu.js"></script>
+</head>
+<body>
+    <header class="top-bar">
+        <div class="logo">
+            <a href="../index.html"><img src="../assets/icons/logo.png" alt="Logo"></a>
+        </div>
+        <div class="user-nav">
+            <button id="menu-btn" class="menu-btn"><img src="../assets/icons/list.png" alt="Menu"></button>
+        </div>
+    </header>
+
+    <main class="content">
+		<a href="../index.html" class="back-link">← Back to Home</a>
+		
+		<section class="auth-card" style="margin: 30px auto; max-width: 500px; text-align: left;">
+			<h2 style="margin-bottom: 10px; text-align: center;">Settings</h2>
+            <p style="text-align: center; color: #aaa; margin-bottom: 30px;">Here you can modify the application settings (Mock).</p>
+            
+			<form class="auth-form" onsubmit="event.preventDefault(); window.location.href='../index.html';">
+				<div class="form-group" style="display: flex; align-items: center; gap: 10px;">
+                    <input type="checkbox" id="dark-mode-toggle" checked style="width: 20px; height: 20px; cursor: pointer;">
+					<label for="dark-mode-toggle" style="margin: 0; cursor: pointer;">Dark Mode</label>
+				</div>
+
+				<div class="form-group" style="margin-top: 25px;">
+					<label for="volume">Volume: <span id="volume-val">50</span>%</label>
+					<div class="input-wrapper" style="padding: 10px 0; background: none; border: none;">
+						<input type="range" id="volume" min="0" max="100" value="50" style="width: 100%; cursor: pointer;" oninput="document.getElementById('volume-val').innerText = this.value">
+					</div>
+				</div>
+
+				<button type="submit" class="primary-btn" style="margin-top: 20px;">Save Settings</button>
+			</form>
+		</section>
+	</main>
+</body>
+</html>

@@ -3,8 +3,9 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Music App - New Downloads</title>
+	<title>Music App - New Uploads</title>
 	<link rel="stylesheet" href="../css/style.css">
+    <script src="../js/menu.js"></script>
 </head>
 <body>
 	<header class="top-bar">
@@ -16,9 +17,8 @@
 			<button class="search-icon"><img src="../assets/icons/search.png" alt="Search"></button>
 		</div>
 		<div class="user-nav">
-			<span>Profile</span>
-			<img src="../assets/icons/profile.png" alt="Profile" class="user-icon">
-		</div>
+            <button id="menu-btn" class="menu-btn"><img src="../assets/icons/list.png" alt="Menu"></button>
+        </div>
 	</header>
 
 	<main class="content">
@@ -26,11 +26,11 @@
 		
 		<section class="music-list-page">
 			<div class="section-header">
-				<h2>New Downloads</h2>
+				<h2>New Uploads</h2>
 			</div>
 			
 			<div class="vertical-list">
-				<div class="list-row">
+				<div class="list-row" onclick="window.location.href='song.html?id=1'" style="cursor: pointer;" role="button" tabindex="0" onkeydown="if(event.key==='Enter') this.click();">
 					<span class="row-number">1.</span>
 					<div class="item-icon">🎵</div>
 					<div class="item-info">
@@ -41,7 +41,7 @@
 						<img src="../assets/icons/star.png" alt="Star"><img src="../assets/icons/star.png" alt="Star"><img src="../assets/icons/star.png" alt="Star"><img src="../assets/icons/star.png" alt="Star"><img src="../assets/icons/star.png" alt="Star">
 					</div>
 				</div>
-				<div class="list-row">
+				<div class="list-row" onclick="window.location.href='song.html?id=1'" style="cursor: pointer;" role="button" tabindex="0" onkeydown="if(event.key==='Enter') this.click();">
 					<span class="row-number">2.</span>
 					<div class="item-icon">🎵</div>
 					<div class="item-info">

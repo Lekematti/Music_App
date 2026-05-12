@@ -3,25 +3,24 @@
  */
 import { describe, it, expect, beforeEach } from 'vitest';
 
-describe('Frontend: DOM apufunktiot / testisimulaatio', () => {
+describe('frontend: DOM utilities / test simulation', () => {
     beforeEach(() => {
-        // Alustetaan DOM-elementti ennen jokaista testiä (simuloidaan selainta)
         document.body.innerHTML = `
             <div id="test-container">
-                <p id="greeting">Hei maailma!</p>
+                <p id="greeting">Test</p>
             </div>
         `;
     });
 
-    it('Pitäisi löytää elementti DOM:ista', () => {
+    it('Should find an element in the DOM', () => {
         const pElement = document.getElementById('greeting');
         expect(pElement).not.toBeNull();
-        expect(pElement.textContent).toBe('Hei maailma!');
+        expect(pElement.textContent).toBe('Test');
     });
 
-    it('Pitäisi päivittää DOM-elementin tekstiä', () => {
+    it('Should update the text content of a DOM element', () => {
         const pElement = document.getElementById('greeting');
-        pElement.textContent = 'Moikka!';
-        expect(document.getElementById('greeting').textContent).toBe('Moikka!');
+        pElement.textContent = 'Test text';
+        expect(document.getElementById('greeting').textContent).toBe('Test text');
     });
 });

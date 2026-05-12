@@ -22,18 +22,6 @@
 		</div>
 	</header>
 
-	<!-- Side Menu -->
-	<aside id="side-menu" class="side-menu">
-		<div class="side-menu-header">
-			<h2>Menu</h2>
-			<button id="close-btn" class="close-btn">X</button>
-		</div>
-		<ul class="side-menu-list">
-			<li><a href="./pages/profile.html"><img src="./assets/icons/profile.png" alt="Profile" class="menu-icon"> Profile</a></li>
-			<li><a href="#"><img src="./assets/icons/settings.png" alt="Settings" class="menu-icon"> Settings</a></li>
-		</ul>
-	</aside>
-
 	<main class="content">
 		<!-- Top 10 -->
 		<section class="music-category">
@@ -42,7 +30,7 @@
 				<a href="./pages/top10.html" class="view-all">View all</a>
 			</div>
 			<div class="horizontal-list">
-				<div class="card">
+				<div class="card" onclick="window.location.href='./pages/song.html?id=1'" style="cursor: pointer;" role="button" tabindex="0" onkeydown="if(event.key==='Enter') this.click();">
 					<div class="card-icon">🎵</div>
 					<h3>Song Name</h3>
 					<p>Artist</p>
@@ -50,7 +38,7 @@
 						<img src="./assets/icons/star.png" alt="Star"><img src="./assets/icons/star.png" alt="Star"><img src="./assets/icons/star.png" alt="Star"><img src="./assets/icons/star.png" alt="Star"><img src="./assets/icons/star.png" alt="Star">
 					</div>
 				</div>
-				<div class="card">
+				<div class="card" onclick="window.location.href='./pages/song.html?id=1'" style="cursor: pointer;" role="button" tabindex="0" onkeydown="if(event.key==='Enter') this.click();">
 					<div class="card-icon">🎵</div>
 					<h3>Song Name</h3>
 					<p>Artist</p>
@@ -58,7 +46,7 @@
 						<img src="./assets/icons/star.png" alt="Star"><img src="./assets/icons/star.png" alt="Star"><img src="./assets/icons/star.png" alt="Star"><img src="./assets/icons/star.png" alt="Star"><img src="./assets/icons/star.png" alt="Star">
 					</div>
 				</div>
-				<div class="card">
+				<div class="card" onclick="window.location.href='./pages/song.html?id=1'" style="cursor: pointer;" role="button" tabindex="0" onkeydown="if(event.key==='Enter') this.click();">
 					<div class="card-icon">🎵</div>
 					<h3>Song Name</h3>
 					<p>Artist</p>
@@ -66,7 +54,7 @@
 						<img src="./assets/icons/star.png" alt="Star"><img src="./assets/icons/star.png" alt="Star"><img src="./assets/icons/star.png" alt="Star"><img src="./assets/icons/star.png" alt="Star"><img src="./assets/icons/star.png" alt="Star">
 					</div>
 				</div>
-				<div class="card">
+				<div class="card" onclick="window.location.href='./pages/song.html?id=1'" style="cursor: pointer;" role="button" tabindex="0" onkeydown="if(event.key==='Enter') this.click();">
 					<div class="card-icon">🎵</div>
 					<h3>Song Name</h3>
 					<p>Artist</p>
@@ -74,7 +62,7 @@
 						<img src="./assets/icons/star.png" alt="Star"><img src="./assets/icons/star.png" alt="Star"><img src="./assets/icons/star.png" alt="Star"><img src="./assets/icons/star.png" alt="Star"><img src="./assets/icons/star.png" alt="Star">
 					</div>
 				</div>
-				<div class="card">
+				<div class="card" onclick="window.location.href='./pages/song.html?id=1'" style="cursor: pointer;" role="button" tabindex="0" onkeydown="if(event.key==='Enter') this.click();">
 					<div class="card-icon">🎵</div>
 					<h3>Song Name</h3>
 					<p>Artist</p>
@@ -85,28 +73,28 @@
 			</div>
 		</section>
 
-		<!-- Past Downloads -->
-		<section class="music-category">
+		<!-- Past Uploads -->
+		<section class="music-section">
 			<div class="section-header">
-				<h2>Past Downloads</h2>
-				<a href="./pages/past-downloads.html" class="view-all">View all</a>
+				<h2>Past Uploads</h2>
+				<a href="./pages/past-uploads.html" class="view-all">View all</a>
 			</div>
 			<div class="horizontal-list">
-				<div class="list-item">
+				<div class="list-item" onclick="window.location.href='./pages/song.html?id=1'" style="cursor: pointer;" role="button" tabindex="0" onkeydown="if(event.key==='Enter') this.click();">
 					<div class="item-icon">🎵</div>
 					<div class="item-info">
 						<h4>Song Name</h4>
 						<p>Artist</p>
 					</div>
 				</div>
-				<div class="list-item">
+				<div class="list-item" onclick="window.location.href='./pages/song.html?id=1'" style="cursor: pointer;" role="button" tabindex="0" onkeydown="if(event.key==='Enter') this.click();">
 					<div class="item-icon">🎵</div>
 					<div class="item-info">
 						<h4>Song Name</h4>
 						<p>Artist</p>
 					</div>
 				</div>
-				<div class="list-item">
+				<div class="list-item" onclick="window.location.href='./pages/song.html?id=1'" style="cursor: pointer;" role="button" tabindex="0" onkeydown="if(event.key==='Enter') this.click();">
 					<div class="item-icon">🎵</div>
 					<div class="item-info">
 						<h4>Song Name</h4>
@@ -116,28 +104,28 @@
 			</div>
 		</section>
 
-		<!-- New Downloads -->
-		<section class="music-category">
+		<!-- New Uploads -->
+		<section class="music-section">
 			<div class="section-header">
-				<h2>New Downloads</h2>
-				<a href="./pages/new-downloads.html" class="view-all">View all</a>
+				<h2>New Uploads</h2>
+				<a href="./pages/new-uploads.html" class="view-all">View all</a>
 			</div>
 			<div class="horizontal-list">
-				<div class="list-item">
+				<div class="list-item" onclick="window.location.href='./pages/song.html?id=1'" style="cursor: pointer;" role="button" tabindex="0" onkeydown="if(event.key==='Enter') this.click();">
 					<div class="item-icon">🎵</div>
 					<div class="item-info">
 						<h4>Song Name</h4>
 						<p>Artist</p>
 					</div>
 				</div>
-				<div class="list-item">
+				<div class="list-item" onclick="window.location.href='./pages/song.html?id=1'" style="cursor: pointer;" role="button" tabindex="0" onkeydown="if(event.key==='Enter') this.click();">
 					<div class="item-icon">🎵</div>
 					<div class="item-info">
 						<h4>Song Name</h4>
 						<p>Artist</p>
 					</div>
 				</div>
-				<div class="list-item">
+				<div class="list-item" onclick="window.location.href='./pages/song.html?id=1'" style="cursor: pointer;" role="button" tabindex="0" onkeydown="if(event.key==='Enter') this.click();">
 					<div class="item-icon">🎵</div>
 					<div class="item-info">
 						<h4>Song Name</h4>
@@ -148,6 +136,35 @@
 		</section>
 	</main>
 
-	<script src="./js/script.js" type="module"></script>
-</body>
-</html>
+        <!-- Global Fixed Bottom Player Mock -->
+        <div class="player-mock" style="position: fixed; bottom: 0; left: 0; width: 100%; padding: 15px 30px; background: #16171b; border-top: 1px solid #2a2a2a; display: flex; align-items: center; justify-content: space-between; z-index: 1000; box-shadow: 0 -5px 15px rgba(0,0,0,0.5);">
+            <div style="display: flex; align-items: center; gap: 15px; width: 25%;">
+                <div style="font-size: 30px; filter: grayscale(1);">🎵</div>
+                <div>
+                    <h4 style="margin: 0; font-size: 14px;">Select a Song</h4>
+                    <p style="margin: 0; font-size: 12px; color: #888;">Artist Name</p>
+                </div>
+            </div>
+
+            <div style="flex-grow: 1; max-width: 40%;">
+                <!-- Play controls -->
+                <div style="display: flex; justify-content: center; align-items: center; gap: 20px; margin-bottom: 8px;">
+                    <button style="background: none; border: none; color: #aaa; font-size: 18px; cursor: pointer; transition: 0.2s;" onmouseover="this.style.color='white'" onmouseout="this.style.color='#aaa'" onfocus="this.style.color='white'" onblur="this.style.color='#aaa'">⏮</button>
+                    <button onclick="alert('Mock: Playing from global player!')" style="background: white; color: black; border: none; border-radius: 50%; width: 40px; height: 40px; font-size: 18px; cursor: pointer; display: flex; justify-content: center; align-items: center;">▶</button>
+                    <button style="background: none; border: none; color: #aaa; font-size: 18px; cursor: pointer; transition: 0.2s;" onmouseover="this.style.color='white'" onmouseout="this.style.color='#aaa'" onfocus="this.style.color='white'" onblur="this.style.color='#aaa'">⏭</button>
+                </div>
+                <!-- Mock progress bar -->
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <span style="color: #888; font-size: 10px;">1:20</span>
+                    <div style="flex-grow: 1; height: 4px; background: #2a2a2a; border-radius: 2px; position: relative; cursor: pointer;">
+                        <div style="position: absolute; left: 0; top: 0; height: 100%; width: 33%; background: white; border-radius: 2px;"></div>
+                    </div>
+                    <span style="color: #888; font-size: 10px;">3:45</span>
+                </div>
+            </div>
+
+            <div style="width: 25%; text-align: right; color: #666; font-size: 12px;">
+                [ MOCK AUDIO PLAYER ]
+            </div>
+        </div>
+
