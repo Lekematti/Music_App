@@ -22,7 +22,7 @@
 	</header>
 
 	<main class="content">
-		<a href="../index.html" class="back-link">← Back to Home</a>
+		<button onclick="window.history.back();" class="back-link" style="background: none; border: none; padding: 0; cursor: pointer; color: inherit; font: inherit; text-decoration: underline;">← Back</button>
 		
 		<section class="music-list-page">
 			<div class="section-header">
@@ -30,7 +30,7 @@
 			</div>
 			
 			<div class="vertical-list">
-				<div class="list-row" onclick="window.location.href='song.html?id=1'" style="cursor: pointer;" role="button" tabindex="0" onkeydown="if(event.key==='Enter') this.click();">
+				<a href="song.html?id=1" class="list-row" style="text-decoration: none; color: inherit;">
 					<span class="row-number">1.</span>
 					<div class="item-icon">🎵</div>
 					<div class="item-info">
@@ -40,8 +40,8 @@
 					<div class="stars">
 						<img src="../assets/icons/star.png" alt="Star"><img src="../assets/icons/star.png" alt="Star"><img src="../assets/icons/star.png" alt="Star"><img src="../assets/icons/star.png" alt="Star"><img src="../assets/icons/star.png" alt="Star">
 					</div>
-				</div>
-				<div class="list-row" onclick="window.location.href='song.html?id=1'" style="cursor: pointer;" role="button" tabindex="0" onkeydown="if(event.key==='Enter') this.click();">
+				</a>
+				<a href="song.html?id=1" class="list-row" style="text-decoration: none; color: inherit;">
 					<span class="row-number">2.</span>
 					<div class="item-icon">🎵</div>
 					<div class="item-info">
@@ -51,7 +51,7 @@
 					<div class="stars">
 						<img src="../assets/icons/star.png" alt="Star"><img src="../assets/icons/star.png" alt="Star"><img src="../assets/icons/star.png" alt="Star"><img src="../assets/icons/star.png" alt="Star"><img src="../assets/icons/star.png" alt="Star">
 					</div>
-				</div>
+				</a>
 			</div>
 		</section>
 	</main>
