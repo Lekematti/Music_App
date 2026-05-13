@@ -1,0 +1,123 @@
+/* Auth Pages (Login / Register) */
+.auth-content {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	min-height: calc(100vh - 100px);
+}
+
+.auth-card {
+	background-color: #16171b;
+	border: 1px solid #2a2a2a;
+	border-radius: 8px;
+	padding: 40px;
+	width: 100%;
+	max-width: 400px;
+}
+
+.auth-card h2 {
+	text-align: center;
+	margin-bottom: 30px;
+	font-size: 24px;
+	font-weight: normal;
+}
+
+.auth-form {
+	display: flex;
+	flex-direction: column;
+	gap: 20px;
+}
+
+.form-group {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	text-align: left;
+}
+
+.form-group label {
+	font-size: 14px;
+	color: #aaa;
+}
+
+.input-wrapper {
+	display: flex;
+	align-items: center;
+	background-color: #222328;
+	border-radius: 4px;
+	padding: 10px 15px;
+	border: 1px solid #2a2a2a;
+}
+
+.input-icon {
+	margin-right: 10px;
+	color: #aaa;
+	font-size: 14px;
+}
+
+.input-wrapper input {
+	flex-grow: 1;
+	background: transparent;
+	border: none;
+	color: white;
+	outline: none;
+	font-size: 14px;
+}
+
+.forgot-password {
+	text-align: right;
+}
+
+.forgot-password a {
+	color: #e5b300;
+	text-decoration: none;
+	font-size: 12px;
+}
+
+.forgot-password a:hover {
+	text-decoration: underline;
+}
+
+.primary-btn {
+	background-color: #e5b300;
+	color: #000;
+	border: none;
+	border-radius: 4px;
+	padding: 12px;
+	font-size: 16px;
+	font-weight: bold;
+	cursor: pointer;
+	margin-top: 10px;
+}
+
+.primary-btn:hover {
+	background-color: #f5c300;
+}
+
+.auth-footer {
+	text-align: center;
+	margin-top: 20px;
+	padding-top: 20px;
+	border-top: 1px solid #2a2a2a;
+	font-size: 14px;
+}
+
+.auth-footer a {
+	color: #e5b300;
+	text-decoration: none;
+}
+
+.auth-footer a:hover {
+	text-decoration: underline;
+}
+
+/* Nav links for Auth header */
+.nav-link {
+	color: #aaa;
+	text-decoration: none;
+	font-size: 14px;
+}
+
+.nav-link:hover, .nav-link.active {
+	color: #e5b300;
+}

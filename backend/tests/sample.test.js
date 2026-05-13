@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 
-describe('Ensimmäinen testisarja', () => {
-    it('Matematiikka toimii', () => {
+describe('First test suite', () => {
+    it('Math works', () => {
         expect(1 + 1).toBe(2);
     });
 });

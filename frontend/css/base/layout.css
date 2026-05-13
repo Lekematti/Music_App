@@ -1,0 +1,32 @@
+/* Main Content */
+.content {
+	padding: 30px;
+	max-width: 1200px;
+	margin: 0 auto;
+}
+
+.music-category {
+	margin-bottom: 40px;
+}
+
+.section-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 15px;
+}
+
+.section-header h2 {
+	font-size: 18px;
+	font-weight: normal;
+}
+
+.view-all {
+	color: #e5b300;
+	text-decoration: none;
+	font-size: 14px;
+}
+
+.view-all:hover {
+	text-decoration: underline;
+}

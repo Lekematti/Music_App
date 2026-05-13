@@ -1,0 +1,65 @@
+/* Header */
+.top-bar {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 15px 30px;
+	background-color: #16171b;
+	border-bottom: 1px solid #2a2a2a;
+}
+
+.logo img {
+	height: 45px;
+	width: auto;
+	margin-top: 5px;
+	filter: invert(1); /* Changes black logo to white */
+}
+
+.search-bar {
+	display: flex;
+	align-items: center;
+	background-color: #222328;
+	border-radius: 20px;
+	padding: 8px 15px;
+	width: 50%;
+	max-width: 500px;
+}
+
+.search-bar input {
+	flex-grow: 1;
+	background: transparent;
+	border: none;
+	color: white;
+	outline: none;
+}
+
+.search-icon {
+	background: transparent;
+	border: none;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+}
+
+.search-icon img {
+	width: 16px;
+	height: 16px;
+	filter: invert(1); /* Changes black search icon to white */
+}
+
+.user-nav {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	cursor: pointer;
+}
+
+.user-nav span {
+	font-size: 14px;
+}
+
+.user-icon {
+	width: 24px;
+	height: 24px;
+	filter: invert(1); /* Changes black profile picture to white */
+}

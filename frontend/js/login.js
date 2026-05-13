@@ -1,8 +1,8 @@
 const loginForm = document.getElementById('login-form');
 
-loginForm.addEventListener('submit', function(tapahtuma) {
+loginForm.addEventListener('submit', function(event) {
     
-    tapahtuma.preventDefault();
+    event.preventDefault();
 
     localStorage.setItem('isLoggedIn', 'true');
     

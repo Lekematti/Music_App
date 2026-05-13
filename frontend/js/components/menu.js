@@ -1,12 +1,12 @@
-// Luodaan Web Component sivupalkkia varten
+// Create a Web Component for the side menu
 class SideMenuComponent extends HTMLElement {
     connectedCallback() {
-        // Tunnistetaan ollaanko alikansiossa (pages)
+        // Detect if we are in a subdirectory (pages)
         const isPagesDir = globalThis.location.pathname.includes('/pages/');
         const basePath = isPagesDir ? '../' : './';
         const pagesPath = isPagesDir ? './' : './pages/';
 
-        // Renderöidään HTML komponentin sisälle
+        // Render HTML inside the component
         this.innerHTML = `
             <aside id="side-menu" class="side-menu">
                 <div class="side-menu-header">
@@ -23,7 +23,7 @@ class SideMenuComponent extends HTMLElement {
         const sideMenu = this.querySelector('#side-menu');
         const closeBtn = this.querySelector('#close-btn');
 
-        // Etsitään kaikki valikkonapit sivulta ja lisätään niihin klikkauskuuntelija
+        // Find all menu buttons and add click listeners to them
         const menuBtns = document.querySelectorAll('.menu-btn, #menu-btn');
         menuBtns.forEach(btn => {
             btn.addEventListener('click', (e) => {
@@ -32,7 +32,7 @@ class SideMenuComponent extends HTMLElement {
             });
         });
 
-        // Sulkemisnappi
+        // Close button
         if (closeBtn) {
             closeBtn.addEventListener('click', () => {
                 sideMenu.classList.remove('open');
@@ -41,13 +41,13 @@ class SideMenuComponent extends HTMLElement {
     }
 }
 
-// Määritellään uusi HTML-elementti <side-menu-component>
+// Define new HTML element <side-menu-component>
 customElements.define('side-menu-component', SideMenuComponent);
 
-// Kun koko sivu on ladattu, lisätään komponentti automaattisesti sivun body-elementtiin,
-// joten sitä ei tarvitse lisätä manuaalisesti jokaiseen HTML-tiedostoon!
+// When the whole page is loaded, add the component automatically to the body element,
+// so there is no need to manually add it to every HTML file!
 document.addEventListener('DOMContentLoaded', () => {
-    // Varmistetaan, ettei sitä ole jo lisätty
+    // Ensure it hasn't been added already
     if (!document.querySelector('side-menu-component')) {
         const menuElement = document.createElement('side-menu-component');
         document.body.appendChild(menuElement);

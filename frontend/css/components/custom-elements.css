@@ -1,0 +1,17 @@
+/* Custom Elements Definition */
+music-card {
+        display: contents;
+}
+audio-player-component {
+        display: block;
+}
+
+music-list-item {
+    display: contents;
+}
+
+top-bar-component { display: block; }
+star-rating { display: contents; }
+list-row-item { display: contents; }
+publication-item { display: contents; }
+back-button { display: contents; }

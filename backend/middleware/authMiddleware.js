@@ -3,27 +3,27 @@ const jwt = require('jsonwebtoken');
 const protect = (req, res, next) => {
     let token;
 
-    // Tarkistetaan löytyykö Authorization header ja alkaako se sanalla "Bearer"
+    // Check if Authorization header exists and starts with "Bearer"
     if (req.headers.authorization?.startsWith('Bearer')) {
         try {
-            // Erotetaan token "Bearer <token>" -merkkijonosta
+            // Extract token from "Bearer <token>" string
             token = req.headers.authorization.split(' ')[1];
 
-            // Varmennetaan token
+            // Verify token
             const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-            // Lisätään dekoodattu käyttäjänimi (tai ID) request olioihin
+            // Add decoded username (or ID) to request objects
             req.user = decoded;
 
             next();
         } catch (error) {
             console.error(error);
-            res.status(401).json({ message: 'Ei valtuuksia, token on virheellinen' });
+            res.status(401).json({ message: 'Not authorized, invalid token' });
         }
     }
 
     if (!token) {
-        res.status(401).json({ message: 'Ei valtuuksia, token puuttuu' });
+        res.status(401).json({ message: 'Not authorized, token missing' });
     }
 };
 

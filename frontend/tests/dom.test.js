@@ -1,9 +1,9 @@
 /**
  * @vitest-environment jsdom
  */
-import { describe, it, expect, beforeEach } from 'vitest';
-import fs from 'fs';
-import path from 'path';
+import { describe, it, expect} from 'vitest';
+import fs from 'node:fs';
+import path from 'node:path';
 
 describe('Navigation and DOM structure tests', () => {
     
@@ -11,7 +11,7 @@ describe('Navigation and DOM structure tests', () => {
         const html = fs.readFileSync(path.resolve(__dirname, '../index.html'), 'utf-8');
         document.body.innerHTML = html;
 
-        // Tarkistetaan päävalikon napit (etusivun kortit) -- nyt ne ovat komponentteja
+        // Check main menu buttons (front page cards) -- now they are components
         const songCards = document.querySelectorAll('music-card');
         expect(songCards.length).toBeGreaterThan(0);
     });

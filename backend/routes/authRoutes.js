@@ -4,37 +4,37 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const { protect } = require('../middleware/authMiddleware');
 
-// "Tietokanta" (väliaikainen mock-tietokanta)
+// "Database" (temporary mock database)
 const users = [];
 
-// JWT Tokenin generoija
+// JWT Token generator
 const generateToken = (id, email) => {
     return jwt.sign({ id, email }, process.env.JWT_SECRET, {
         expiresIn: '30d',
     });
 };
 
-// @desc    Rekisteröi uusi käyttäjä
+// @desc    Register a new user
 // @route   POST /api/auth/register
 // @access  Public
 router.post('/register', async (req, res) => {
     const { username, email, password } = req.body;
 
     if (!username || !email || !password) {
-        return res.status(400).json({ message: 'Täytä kaikki kentät' });
+        return res.status(400).json({ message: 'Please fill in all fields' });
     }
 
-    // Tarkasta onko käyttäjä olemassa mock-kannassa
+    // Check if user exists in the mock database
     const userExists = users.find(u => u.email === email);
     if (userExists) {
-        return res.status(400).json({ message: 'Käyttäjä on jo olemassa' });
+        return res.status(400).json({ message: 'User already exists' });
     }
 
-    // Salasana tiiviste
+    // Password hash
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    // Luo käyttäjä
+    // Create user
     const newUser = {
         id: users.length + 1,
         username,
@@ -51,16 +51,16 @@ router.post('/register', async (req, res) => {
     });
 });
 
-// @desc    Kirjaudu sisään
+// @desc    Login user
 // @route   POST /api/auth/login
 // @access  Public
 router.post('/login', async (req, res) => {
     const { email, password } = req.body;
 
-    // Hae käyttäjä
+    // Find user
     const user = users.find(u => u.email === email);
 
-    // Tarkista salasana ja lähetä JWT-token
+    // Check password and send JWT token
     if (user && (await bcrypt.compare(password, user.password))) {
         res.json({
             id: user.id,
@@ -69,15 +69,15 @@ router.post('/login', async (req, res) => {
             token: generateToken(user.id, user.email)
         });
     } else {
-        res.status(400).json({ message: 'Väärä sähköposti tai salasana' });
+        res.status(400).json({ message: 'Invalid email or password' });
     }
 });
 
-// @desc    Hae kirjautuneen käyttäjän tiedot
+// @desc    Get logged in user info
 // @route   GET /api/auth/me
-// @access  Private (Vaatii JWT-tokenin)
+// @access  Private (Requires JWT token)
 router.get('/me', protect, (req, res) => {
-    // Tässä req.user.email tulee JWT tokenista, joka tarkistettiin authMiddleware.js:ssä
+    // Here req.user.email comes from JWT token, which was verified in authMiddleware.js
     const user = users.find(u => u.email === req.user.email);
     if (user) {
         res.json({
@@ -86,7 +86,7 @@ router.get('/me', protect, (req, res) => {
             email: user.email
         });
     } else {
-        res.status(404).json({ message: 'Käyttäjää ei löytynyt' });
+        res.status(404).json({ message: 'User not found' });
     }
 });
 

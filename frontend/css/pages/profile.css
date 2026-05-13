@@ -1,0 +1,119 @@
+/* Profile Layout */
+.profile-container {
+	display: flex;
+	gap: 20px;
+	padding: 20px;
+	max-width: 1200px;
+	margin: 0 auto;
+}
+.profile-sidebar {
+	width: 250px;
+	background-color: #16171b;
+	border-radius: 8px;
+	padding: 20px 0;
+	height: fit-content;
+}
+.profile-sidebar ul {
+	list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.profile-sidebar li {
+	padding: 15px 20px;
+	display: flex;
+	align-items: center;
+	gap: 15px;
+	cursor: pointer;
+	color: #aaa;
+	transition: background-color 0.2s;
+}
+.profile-sidebar li.active {
+	color: #eab745;
+}
+.profile-sidebar li:hover:not(.active) {
+	background-color: #222328;
+}
+.sidebar-icon {
+	width: 20px;
+	height: 20px;
+	filter: invert(1);
+}
+.profile-sidebar li.active .sidebar-icon {
+	filter: invert(75%) sepia(33%) saturate(1212%) hue-rotate(345deg) brightness(98%) contrast(92%);
+}
+
+.profile-content {
+	flex: 1;
+	background-color: #16171b;
+	border-radius: 8px;
+	padding: 20px;
+}
+.profile-content h2 {
+	margin-top: 0;
+	margin-bottom: 20px;
+	font-size: 20px;
+	border-bottom: 1px solid #2a2a2a;
+	padding-bottom: 15px;
+}
+
+/* Own publications list */
+.publication-list {
+	display: flex;
+	flex-direction: column;
+}
+.publication-item {
+	display: flex;
+	align-items: center;
+	padding: 15px 0;
+	border-bottom: 1px solid #2a2a2a;
+}
+.publication-item:last-child {
+	border-bottom: none;
+}
+.pub-icon {
+	width: 40px;
+	height: 40px;
+	background-color: #222328;
+	border-radius: 4px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	margin-right: 15px;
+}
+.pub-info {
+	flex: 1;
+}
+.pub-info h4 {
+	margin: 0 0 5px 0;
+	font-size: 16px;
+	font-weight: normal;
+}
+.pub-info p {
+	margin: 0;
+	color: #aaa;
+	font-size: 12px;
+}
+.pub-stars {
+	margin-right: 20px;
+	display: flex;
+	gap: 2px;
+}
+.pub-stars img {
+	width: 14px;
+	height: 14px;
+    filter: invert(75%) sepia(33%) saturate(1212%) hue-rotate(345deg) brightness(98%) contrast(92%);
+}
+.pub-more {
+	background: none;
+	border: none;
+	color: #aaa;
+	font-size: 24px;
+	cursor: pointer;
+	padding: 0 10px;
+}
+.pub-more:hover {
+	color: #fff;
+}
+#logout-btn:hover {
+	background-color: rgba(217, 83, 79, 0.1) !important;
+}
