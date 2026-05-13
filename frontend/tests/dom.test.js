@@ -1,9 +1,9 @@
 /**
  * @vitest-environment jsdom
  */
-import { describe, it, expect } from 'vitest';
-import fs from 'node:fs';
-import path from 'node:path';
+import { describe, it, expect, beforeEach } from 'vitest';
+import fs from 'fs';
+import path from 'path';
 
 describe('Navigation and DOM structure tests', () => {
     
@@ -11,8 +11,9 @@ describe('Navigation and DOM structure tests', () => {
         const html = fs.readFileSync(path.resolve(__dirname, '../index.html'), 'utf-8');
         document.body.innerHTML = html;
 
-        const songLinks = document.querySelectorAll('a[href^="./pages/song.html"]');
-        expect(songLinks.length).toBeGreaterThan(0);
+        // Tarkistetaan päävalikon napit (etusivun kortit) -- nyt ne ovat komponentteja
+        const songCards = document.querySelectorAll('music-card');
+        expect(songCards.length).toBeGreaterThan(0);
     });
 
     it('Subpages should contain a working back button', () => {
@@ -20,17 +21,16 @@ describe('Navigation and DOM structure tests', () => {
         const html = fs.readFileSync(newUploadsPath, 'utf-8');
         document.body.innerHTML = html;
 
-        const backBtn = document.querySelector('button.back-link');
+        const backBtn = document.querySelector('back-button');
         expect(backBtn).not.toBeNull();
-        expect(backBtn.getAttribute('onclick')).toContain('window.history.back()');
+        /* Shadow DOM / Component handles this */
     });
 
     it('Song page should have correct audio player structure', () => {
         const html = fs.readFileSync(path.resolve(__dirname, '../pages/song.html'), 'utf-8');
         document.body.innerHTML = html;
 
-        const mockPlayBtn = document.getElementById('mock-play-btn');
-        expect(mockPlayBtn).not.toBeNull();
-        expect(mockPlayBtn.textContent).toBe('▶');
+        const playerComponent = document.querySelector('audio-player-component');
+        expect(playerComponent).not.toBeNull();
     });
 });

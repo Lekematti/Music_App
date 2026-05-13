@@ -20,7 +20,7 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById('song-artist').textContent = song.artist;
 
     // Play button logic
-    const playBtn = document.getElementById('mock-play-btn');
+    const playBtn = document.querySelector('audio-player-component').querySelector('.mock-play-btn');
     if (playBtn) {
         playBtn.addEventListener('click', () => {
             alert(`Mock: Playing "${song.title}"`);

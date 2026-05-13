@@ -9,18 +9,7 @@
     <script src="../js/menu.js"></script>
 </head>
 <body>
-	<header class="top-bar">
-		<div class="logo">
-			<a href="../index.html"><img src="../assets/icons/logo.png" alt="Logo"></a>
-		</div>
-		<div class="search-bar">
-			<input type="text" placeholder="Search for songs, artists, albums...">
-			<button class="search-icon"><img src="../assets/icons/search.png" alt="Search"></button>
-		</div>
-		<div class="user-nav">
-            <button id="menu-btn" class="menu-btn"><img src="../assets/icons/list.png" alt="Menu"></button>
-        </div>
-	</header>
+	<top-bar-component></top-bar-component>
 
 	<main class="profile-container">
 		<aside class="profile-sidebar">
@@ -195,5 +184,10 @@
 			});
 		}
 	</script>
+    <script src="../js/top-bar.js"></script>
+    <script src="../js/star-rating.js"></script>
+    <script src="../js/list-row-item.js"></script>
+    <script src="../js/publication-item.js"></script>
+    <script src="../js/back-button.js"></script>
 </body>
 </html>

@@ -8,17 +8,10 @@
     <script src="../js/menu.js"></script>
 </head>
 <body>
-    <header class="top-bar">
-        <div class="logo">
-            <a href="../index.html"><img src="../assets/icons/logo.png" alt="Logo"></a>
-        </div>
-        <div class="user-nav">
-            <button id="menu-btn" class="menu-btn"><img src="../assets/icons/list.png" alt="Menu"></button>
-        </div>
-    </header>
+    <top-bar-component></top-bar-component>
 
     <main class="content">
-		<button onclick="window.history.back();" class="back-link" style="background: none; border: none; padding: 0; cursor: pointer; color: inherit; font: inherit; text-decoration: underline;">← Back</button>
+		<back-button></back-button>
 		
 		<section class="auth-card" style="margin: 30px auto; max-width: 500px; text-align: left;">
 			<h2 style="margin-bottom: 10px; text-align: center;">Settings</h2>
@@ -41,5 +34,10 @@
 			</form>
 		</section>
 	</main>
+    <script src="../js/top-bar.js"></script>
+    <script src="../js/star-rating.js"></script>
+    <script src="../js/list-row-item.js"></script>
+    <script src="../js/publication-item.js"></script>
+    <script src="../js/back-button.js"></script>
 </body>
 </html>

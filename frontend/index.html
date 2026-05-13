@@ -9,18 +9,7 @@
 	<script src="./js/menu.js"></script>
 </head>
 <body>
-	<header class="top-bar">
-		<div class="logo">
-			<img src="./assets/icons/logo.png" alt="Logo">
-		</div>
-		<div class="search-bar">
-			<input type="text" placeholder="Search songs, artists, albums...">
-			<button class="search-icon"><img src="./assets/icons/search.png" alt="Search"></button>
-		</div>
-		<div class="user-nav">
-			<button id="menu-btn" class="menu-btn"><img src="./assets/icons/list.png" alt="Menu"></button>
-		</div>
-	</header>
+	<top-bar-component></top-bar-component>
 
 	<main class="content">
 		<!-- Top 10 -->
@@ -30,46 +19,11 @@
 				<a href="./pages/top10.html" class="view-all">View all</a>
 			</div>
 			<div class="horizontal-list">
-				<a href="./pages/song.html?id=1" class="card" style="text-decoration: none; color: inherit;">
-					<div class="card-icon">🎵</div>
-					<h3>Song Name</h3>
-					<p>Artist</p>
-					<div class="stars">
-						<img src="./assets/icons/star.png" alt="Star"><img src="./assets/icons/star.png" alt="Star"><img src="./assets/icons/star.png" alt="Star"><img src="./assets/icons/star.png" alt="Star"><img src="./assets/icons/star.png" alt="Star">
-					</div>
-				</a>
-				<a href="./pages/song.html?id=1" class="card" style="text-decoration: none; color: inherit;">
-					<div class="card-icon">🎵</div>
-					<h3>Song Name</h3>
-					<p>Artist</p>
-					<div class="stars">
-						<img src="./assets/icons/star.png" alt="Star"><img src="./assets/icons/star.png" alt="Star"><img src="./assets/icons/star.png" alt="Star"><img src="./assets/icons/star.png" alt="Star"><img src="./assets/icons/star.png" alt="Star">
-					</div>
-				</a>
-				<a href="./pages/song.html?id=1" class="card" style="text-decoration: none; color: inherit;">
-					<div class="card-icon">🎵</div>
-					<h3>Song Name</h3>
-					<p>Artist</p>
-					<div class="stars">
-						<img src="./assets/icons/star.png" alt="Star"><img src="./assets/icons/star.png" alt="Star"><img src="./assets/icons/star.png" alt="Star"><img src="./assets/icons/star.png" alt="Star"><img src="./assets/icons/star.png" alt="Star">
-					</div>
-				</a>
-				<a href="./pages/song.html?id=1" class="card" style="text-decoration: none; color: inherit;">
-					<div class="card-icon">🎵</div>
-					<h3>Song Name</h3>
-					<p>Artist</p>
-					<div class="stars">
-						<img src="./assets/icons/star.png" alt="Star"><img src="./assets/icons/star.png" alt="Star"><img src="./assets/icons/star.png" alt="Star"><img src="./assets/icons/star.png" alt="Star"><img src="./assets/icons/star.png" alt="Star">
-					</div>
-				</a>
-				<a href="./pages/song.html?id=1" class="card" style="text-decoration: none; color: inherit;">
-					<div class="card-icon">🎵</div>
-					<h3>Song Name</h3>
-					<p>Artist</p>
-					<div class="stars">
-						<img src="./assets/icons/star.png" alt="Star"><img src="./assets/icons/star.png" alt="Star"><img src="./assets/icons/star.png" alt="Star"><img src="./assets/icons/star.png" alt="Star"><img src="./assets/icons/star.png" alt="Star">
-					</div>
-				</a>
+				 <music-card song-id="1" title="Song Name" artist="Artist"></music-card>
+				 <music-card song-id="1" title="Song Name" artist="Artist"></music-card>
+				 <music-card song-id="1" title="Song Name" artist="Artist"></music-card>
+				 <music-card song-id="1" title="Song Name" artist="Artist"></music-card>
+				 <music-card song-id="1" title="Song Name" artist="Artist"></music-card>
 			</div>
 		</section>
 
@@ -80,27 +34,9 @@
 				<a href="./pages/past-uploads.html" class="view-all">View all</a>
 			</div>
 			<div class="horizontal-list">
-				<a href="./pages/song.html?id=1" class="list-item" style="text-decoration: none; color: inherit;">
-					<div class="item-icon">🎵</div>
-					<div class="item-info">
-						<h4>Song Name</h4>
-						<p>Artist</p>
-					</div>
-				</a>
-				<a href="./pages/song.html?id=1" class="list-item" style="text-decoration: none; color: inherit;">
-					<div class="item-icon">🎵</div>
-					<div class="item-info">
-						<h4>Song Name</h4>
-						<p>Artist</p>
-					</div>
-				</a>
-				<a href="./pages/song.html?id=1" class="list-item" style="text-decoration: none; color: inherit;">
-					<div class="item-icon">🎵</div>
-					<div class="item-info">
-						<h4>Song Name</h4>
-						<p>Artist</p>
-					</div>
-				</a>
+				 <music-list-item song-id="1" title="Song Name" artist="Artist"></music-list-item>
+				 <music-list-item song-id="1" title="Song Name" artist="Artist"></music-list-item>
+				 <music-list-item song-id="1" title="Song Name" artist="Artist"></music-list-item>
 			</div>
 		</section>
 
@@ -111,27 +47,9 @@
 				<a href="./pages/new-uploads.html" class="view-all">View all</a>
 			</div>
 			<div class="horizontal-list">
-				<a href="./pages/song.html?id=1" class="list-item" style="text-decoration: none; color: inherit;">
-					<div class="item-icon">🎵</div>
-					<div class="item-info">
-						<h4>Song Name</h4>
-						<p>Artist</p>
-					</div>
-				</a>
-				<a href="./pages/song.html?id=1" class="list-item" style="text-decoration: none; color: inherit;">
-					<div class="item-icon">🎵</div>
-					<div class="item-info">
-						<h4>Song Name</h4>
-						<p>Artist</p>
-					</div>
-				</a>
-				<a href="./pages/song.html?id=1" class="list-item" style="text-decoration: none; color: inherit;">
-					<div class="item-icon">🎵</div>
-					<div class="item-info">
-						<h4>Song Name</h4>
-						<p>Artist</p>
-					</div>
-				</a>
+				 <music-list-item song-id="1" title="Song Name" artist="Artist"></music-list-item>
+				 <music-list-item song-id="1" title="Song Name" artist="Artist"></music-list-item>
+				 <music-list-item song-id="1" title="Song Name" artist="Artist"></music-list-item>
 			</div>
 		</section>
 	</main>
@@ -168,3 +86,13 @@
             </div>
         </div>
 
+
+        <script src="./js/music-card.js"></script>
+    	<script src="./js/music-list-item.js"></script>
+    <script src="./js/top-bar.js"></script>
+    <script src="./js/star-rating.js"></script>
+    <script src="./js/list-row-item.js"></script>
+    <script src="./js/publication-item.js"></script>
+    <script src="./js/back-button.js"></script>
+</body>
+</html>

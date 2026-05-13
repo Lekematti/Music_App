@@ -8,21 +8,10 @@
     <script src="../js/menu.js"></script>
 </head>
 <body>
-	<header class="top-bar">
-		<div class="logo">
-			<a href="../index.html"><img src="../assets/icons/logo.png" alt="Logo"></a>
-		</div>
-		<div class="search-bar">
-			<input type="text" placeholder="Search songs, artists, albums...">
-			<button class="search-icon"><img src="../assets/icons/search.png" alt="Search"></button>
-		</div>
-		<div class="user-nav">
-            <button id="menu-btn" class="menu-btn"><img src="../assets/icons/list.png" alt="Menu"></button>
-        </div>
-	</header>
+	<top-bar-component></top-bar-component>
 
 	<main class="content">
-		<button onclick="window.history.back();" class="back-link" style="background: none; border: none; padding: 0; cursor: pointer; color: inherit; font: inherit; text-decoration: underline;">← Back</button>
+		<back-button></back-button>
 		
 		<section class="music-list-page">
 			<div class="section-header">
@@ -30,32 +19,17 @@
 			</div>
 			
 			<div class="vertical-list">
-				<a href="song.html?id=1" class="list-row" style="text-decoration: none; color: inherit;">
-					<span class="row-number">1.</span>
-					<div class="item-icon">🎵</div>
-					<div class="item-info">
-						<h4>Song Name</h4>
-						<p>Artist</p>
-					</div>
-					<div class="stars">
-						<img src="../assets/icons/star.png" alt="Star"><img src="../assets/icons/star.png" alt="Star"><img src="../assets/icons/star.png" alt="Star"><img src="../assets/icons/star.png" alt="Star"><img src="../assets/icons/star.png" alt="Star">
-					</div>
-				</a>
-				<a href="song.html?id=1" class="list-row" style="text-decoration: none; color: inherit;">
-					<span class="row-number">2.</span>
-					<div class="item-icon">🎵</div>
-					<div class="item-info">
-						<h4>Song Name</h4>
-						<p>Artist</p>
-					</div>
-					<div class="stars">
-						<img src="../assets/icons/star.png" alt="Star"><img src="../assets/icons/star.png" alt="Star"><img src="../assets/icons/star.png" alt="Star"><img src="../assets/icons/star.png" alt="Star"><img src="../assets/icons/star.png" alt="Star">
-					</div>
-				</a>
+				<list-row-item song-id="1" rank="1." title="Song Name" artist="Artist"></list-row-item>
+				<list-row-item song-id="1" rank="2." title="Song Name" artist="Artist"></list-row-item>
 			</div>
 		</section>
 	</main>
 
 	<script src="../js/script.js" type="module"></script>
+    <script src="../js/top-bar.js"></script>
+    <script src="../js/star-rating.js"></script>
+    <script src="../js/list-row-item.js"></script>
+    <script src="../js/publication-item.js"></script>
+    <script src="../js/back-button.js"></script>
 </body>
 </html>
