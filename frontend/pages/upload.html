@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Song - Music App</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <top-bar-component></top-bar-component>
+
+    <main class="auth-content">
+        <div class="auth-card">
+            <h2>Upload a Song</h2>
+            <p style="text-align: center; color: #aaa; margin-bottom: 20px;">Add a new track.</p>
+
+            <form id="upload-form" class="auth-form">
+                <div class="form-group">
+                    <label for="title">Song Title</label>
+                    <div class="input-wrapper">
+                        <span class="input-icon">🎵</span>
+                        <input type="text" id="title" required placeholder="Example: My New Song">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="artist">Artist</label>
+                    <div class="input-wrapper">
+                        <span class="input-icon">👤</span>
+                        <input type="text" id="artist" required placeholder="Example: The Band">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="url">Audio File URL (temporary)</label>
+                    <div class="input-wrapper">
+                        <span class="input-icon">🔗</span>
+                        <input type="url" id="url" required placeholder="https://example.com/song.mp3">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="imageUrl">Cover Image URL (optional)</label>
+                    <div class="input-wrapper">
+                        <span class="input-icon">🖼️</span>
+                        <input type="url" id="imageUrl" placeholder="https://example.com/cover.jpg">
+                    </div>
+                </div>
+
+                <button type="submit" class="primary-btn">Upload</button>
+            </form>
+            <p id="upload-message" style="margin-top: 15px; text-align: center;"></p>
+        </div>
+    </main>
+
+    <!-- Component scripts -->
+    <script src="../js/components/top-bar.js"></script>
+    <script src="../js/components/menu.js"></script>
+
+    <!-- Upload logic -->
+    <script>
+        document.getElementById('upload-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const title = document.getElementById('title').value;
+            const artist = document.getElementById('artist').value;
+            const url = document.getElementById('url').value;
+            const imageUrl = document.getElementById('imageUrl').value || null;
+            const messageEl = document.getElementById('upload-message');
+
+            try {
+                // Get user token from localStorage
+                const token = localStorage.getItem('token');
+                
+                if (!token) {
+                    messageEl.textContent = "You must be logged in to upload.";
+                    messageEl.className = "upload-message-error";
+                    return;
+                }
+
+                const res = await fetch('http://localhost:5000/api/songs', {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ title, artist, url, imageUrl })
+                });
+
+                if (res.ok) {
+                    messageEl.textContent = "Song uploaded successfully!";
+                    messageEl.className = "upload-message-success";
+                    document.getElementById('upload-form').reset();
+                } else {
+                    const data = await res.json();
+                    messageEl.textContent = data.message || "Upload failed.";
+                    messageEl.className = "upload-message-error";
+                }
+            } catch (err) {
+                console.error(err);
+                messageEl.textContent = "Server error. Please try again later.";
+                messageEl.className = "upload-message-error";
+            }
+        });
+    </script>
+</body>
+</html>

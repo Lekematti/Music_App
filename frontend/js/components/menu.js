@@ -15,6 +15,7 @@ class SideMenuComponent extends HTMLElement {
                 </div>
                 <ul class="side-menu-list">
                     <li><a href="${pagesPath}profile.html"><img src="${basePath}assets/icons/profile.png" alt="Profile" class="menu-icon"> Profile</a></li>
+                    <li><a href="${pagesPath}upload.html"><img src="${basePath}assets/icons/upload.png" alt="Upload" class="menu-icon"> Upload</a></li>
                     <li><a href="${pagesPath}settings.html"><img src="${basePath}assets/icons/settings.png" alt="Settings" class="menu-icon"> Settings</a></li>
                 </ul>
             </aside>
@@ -23,13 +24,12 @@ class SideMenuComponent extends HTMLElement {
         const sideMenu = this.querySelector('#side-menu');
         const closeBtn = this.querySelector('#close-btn');
 
-        // Find all menu buttons and add click listeners to them
-        const menuBtns = document.querySelectorAll('.menu-btn, #menu-btn');
-        menuBtns.forEach(btn => {
-            btn.addEventListener('click', (e) => {
+        // Allow opening via global event to avoid race conditions with other components
+        document.addEventListener('click', (e) => {
+            if (e.target.closest('.menu-btn, #menu-btn')) {
                 e.preventDefault();
                 sideMenu.classList.add('open');
-            });
+            }
         });
 
         // Close button

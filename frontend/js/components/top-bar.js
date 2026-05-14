@@ -17,16 +17,6 @@ class TopBarComponent extends HTMLElement {
                 </div>
             </header>
         `;
-        
-        // Re-attach menu event listener since we dynamically created the menu-btn
-        const menuBtn = this.querySelector('#menu-btn');
-        const sideMenu = document.querySelector('#side-menu'); // from menu.js
-        if (menuBtn && sideMenu) {
-            menuBtn.addEventListener('click', (e) => {
-                e.preventDefault();
-                sideMenu.classList.add('open');
-            });
-        }
     }
 }
 customElements.define('top-bar-component', TopBarComponent);

@@ -1,0 +1,26 @@
+/* Upload Page Specific Styles */
+
+#upload-message {
+    margin-top: 15px;
+    text-align: center;
+    font-size: 14px;
+    padding: 10px;
+    border-radius: 4px;
+    display: none; /* Piilotettu oletuksena */
+}
+
+/* Onnistumisen tyyli */
+.upload-message-success {
+    display: block !important;
+    background-color: rgba(76, 175, 80, 0.1);
+    color: #4caf50;
+    border: 1px solid rgba(76, 175, 80, 0.3);
+}
+
+/* Virheen tyyli */
+.upload-message-error {
+    display: block !important;
+    background-color: rgba(244, 67, 54, 0.1);
+    color: #f44336;
+    border: 1px solid rgba(244, 67, 54, 0.3);
+}
