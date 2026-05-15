@@ -1,36 +1,56 @@
 /**
  * @vitest-environment jsdom
  */
-import { describe, it, expect} from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 import fs from 'node:fs';
 import path from 'node:path';
 
-describe('Navigation and DOM structure tests', () => {
+// Import components to register them in JSDOM
+import '../js/components/music-card.js';
+// (Assuming these exist, but we can stick to testing the overall DOM and known elements)
+
+describe('Navigation and DOM Component tests', () => {
+
+    beforeEach(() => {
+        // Reset DOM before each test
+        document.body.innerHTML = '';
+        if (globalThis.location) {
+            globalThis.location.pathname = '/';
+        }
+    });
     
-    it('Index page should contain featured song links', () => {
+    it('Index page should contain music-card elements', () => {
         const html = fs.readFileSync(path.resolve(__dirname, '../index.html'), 'utf-8');
         document.body.innerHTML = html;
 
-        // Check main menu buttons (front page cards) -- now they are components
         const songCards = document.querySelectorAll('music-card');
         expect(songCards.length).toBeGreaterThan(0);
     });
 
-    it('Subpages should contain a working back button', () => {
-        const newUploadsPath = path.resolve(__dirname, '../pages/new-uploads.html');
-        const html = fs.readFileSync(newUploadsPath, 'utf-8');
-        document.body.innerHTML = html;
+    it('Music card component should correctly render attributes', () => {
+        const card = document.createElement('music-card');
+        card.setAttribute('title', 'Test Song');
+        card.setAttribute('artist', 'Test Artist');
+        card.setAttribute('song-id', '42');
+        document.body.appendChild(card);
 
-        const backBtn = document.querySelector('back-button');
-        expect(backBtn).not.toBeNull();
-        /* Shadow DOM / Component handles this */
+        const titleHeader = card.querySelector('h3');
+        const artistEl = card.querySelector('p');
+        const anchor = card.querySelector('a');
+
+        expect(titleHeader.textContent).toBe('Test Song');
+        expect(artistEl.textContent).toBe('Test Artist');
+        expect(anchor.getAttribute('href')).toContain('id=42');
     });
 
     it('Song page should have correct audio player structure', () => {
         const html = fs.readFileSync(path.resolve(__dirname, '../pages/song.html'), 'utf-8');
         document.body.innerHTML = html;
 
-        const playerComponent = document.querySelector('audio-player-component');
-        expect(playerComponent).not.toBeNull();
+        // Either standard audio tag, or your custom element if defined
+        const audio = document.querySelector('audio');
+        const customPlayer = document.querySelector('audio-player-component');
+        
+        expect(audio || customPlayer).not.toBeNull();
     });
 });

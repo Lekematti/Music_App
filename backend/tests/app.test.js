@@ -1,5 +1,18 @@
-import { describe, it, expect } from 'vitest';
+// Setup fake DB URL to allow Prisma to instantiate without errors
+process.env.DATABASE_URL = "postgres://fake:fake@localhost:5432/fake";
+
+import { describe, it, expect, vi } from 'vitest';
 import request from 'supertest';
+
+// Mock our own prismaClient
+vi.mock('../prisma/prismaClient', () => {
+    return {
+        default: {},
+        user: {},
+        song: {}
+    };
+});
+
 import app from '../server';
 
 describe('Backend API Routes', () => {

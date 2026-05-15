@@ -1,10 +1,11 @@
 import { defineConfig } from 'vitest/config';
+import path from 'node:path';
 
 export default defineConfig({
   test: {
     root: './',
-    // We define this as 'node' by default. We can override it in test files with
-    // /* @vitest-environment jsdom */ at the top of the file for DOM simulation.
     environment: 'node',
+    include: ['backend/tests/**/*.test.js', 'frontend/tests/**/*.test.js'],
+    setupFiles: ['backend/tests/setup.mjs'],
   },
 });
