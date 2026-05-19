@@ -99,4 +99,30 @@ describe('Auth API Routes', () => {
       expect(response.body.message).toBe('Please enter a valid email address');
     });
   });
+
+  describe('GET /api/auth/me', () => {
+    it('Should fetch current user info when token is provided', async () => {
+      const user = uniqueUser();
+      
+      // Register
+      const res = await request(app).post('/api/auth/register').send(user);
+      const token = res.body.token;
+
+      // Get me
+      const meRes = await request(app)
+        .get('/api/auth/me')
+        .set('Authorization', `Bearer ${token}`);
+
+      expect(meRes.status).toBe(200);
+      expect(meRes.body.email).toBe(user.email);
+      expect(meRes.body.username).toBe(user.username);
+    });
+
+    it('Should return 401 if token is invalid or missing', async () => {
+      const meRes = await request(app).get('/api/auth/me');
+      
+      expect(meRes.status).toBe(401);
+      expect(meRes.body.message).toBe('Not authorized, token missing');
+    });
+  });
 });

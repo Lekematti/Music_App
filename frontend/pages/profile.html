@@ -109,11 +109,11 @@
                 <form class="auth-form" style="max-width: 400px; margin-top: 20px;">
                     <div class="form-group">
                         <label for="current-password">Current Password</label>
-                        <input type="password" id="current-password" placeholder="Enter current password" required style="width: 100%; padding: 10px; background: #16171b; border: 1px solid #2a2a2a; color: white;">
+						<password-input input-id="current-password" placeholder="Enter current password" required hide-icon></password-input>
                     </div>
                     <div class="form-group" style="margin-top: 15px;">
                         <label for="new-password">New Password</label>
-                        <input type="password" id="new-password" placeholder="Enter new password" required style="width: 100%; padding: 10px; background: #16171b; border: 1px solid #2a2a2a; color: white;">
+						<password-input input-id="new-password" placeholder="Enter new password" required hide-icon></password-input>
                     </div>
                     <button type="submit" class="primary-btn" style="margin-top: 20px;">Update Password</button>
                 </form>
@@ -164,6 +164,7 @@
 	</main>
 
 	<script src="../js/profile.js"></script>
+	<script src="../js/components/password-input.js"></script>
     <script src="../js/components/top-bar.js"></script>
     <script src="../js/components/star-rating.js"></script>
     <script src="../js/components/list-row-item.js"></script>
