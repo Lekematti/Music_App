@@ -117,3 +117,79 @@
 #logout-btn:hover {
 	background-color: rgba(217, 83, 79, 0.1) !important;
 }
+
+/* User Profile Sidebar */
+.profile-info-sidebar {
+	width: 250px;
+	height: fit-content;
+}
+
+.user-profile-card {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	background-color: #16171b;
+	border-radius: 8px;
+	padding: 30px 20px;
+	text-align: center;
+}
+
+.user-avatar {
+	width: 120px;
+	height: 120px;
+	border-radius: 50%;
+	background-color: #222328;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	margin-bottom: 20px;
+	border: 3px solid #2a2a2a;
+	overflow: hidden;
+}
+
+.user-avatar img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+.user-info h3 {
+	margin: 0 0 5px 0;
+	font-size: 20px;
+	font-weight: 500;
+	color: #fff;
+}
+
+.user-email {
+	margin: 0 0 25px 0;
+	color: #aaa;
+	font-size: 13px;
+	word-break: break-all;
+}
+
+.user-stats {
+	display: flex;
+	justify-content: center;
+	width: 100%;
+	padding-top: 20px;
+	border-top: 1px solid #2a2a2a;
+}
+
+.stat {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+.stat-value {
+	font-size: 24px;
+	font-weight: 600;
+	color: #eab745;
+}
+
+.stat-label {
+	font-size: 12px;
+	color: #aaa;
+	margin-top: 5px;
+	text-transform: uppercase;
+}
