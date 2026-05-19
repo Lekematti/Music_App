@@ -5,6 +5,11 @@ const bcrypt = require('bcryptjs');
 const prisma = require('../prisma/prismaClient'); // Prisma-tietokantayhteys
 const { protect } = require('../middleware/authMiddleware');
 
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+const normalizeEmail = (email) => email.trim().toLowerCase();
+const isValidEmail = (email) => EMAIL_REGEX.test(email);
+
 // JWT Token generator
 const generateToken = (id, email) => {
     return jwt.sign({ id, email }, process.env.JWT_SECRET, {
@@ -18,17 +23,32 @@ const generateToken = (id, email) => {
 router.post('/register', async (req, res) => {
     try {
         const { username, email, password } = req.body;
+        const trimmedUsername = typeof username === 'string' ? username.trim() : '';
+        const normalizedEmail = typeof email === 'string' ? normalizeEmail(email) : '';
+        const passwordValue = typeof password === 'string' ? password : '';
 
-        if (!username || !email || !password) {
+        if (!trimmedUsername || !normalizedEmail || !passwordValue) {
             return res.status(400).json({ message: 'Please fill in all fields' });
+        }
+
+        if (trimmedUsername.length < 3) {
+            return res.status(400).json({ message: 'Username must be at least 3 characters long' });
+        }
+
+        if (!isValidEmail(normalizedEmail)) {
+            return res.status(400).json({ message: 'Please enter a valid email address' });
+        }
+
+        if (passwordValue.length < 6) {
+            return res.status(400).json({ message: 'Password must be at least 6 characters long' });
         }
 
         // Tarkista onko email tai username jo tietokannassa
         const userExists = await prisma.user.findFirst({
             where: {
                 OR: [
-                    { email: email },
-                    { username: username }
+                    { email: normalizedEmail },
+                    { username: trimmedUsername }
                 ]
             }
         });
@@ -39,13 +59,13 @@ router.post('/register', async (req, res) => {
 
         // Password hash
         const salt = await bcrypt.genSalt(10);
-        const hashedPassword = await bcrypt.hash(password, salt);
+        const hashedPassword = await bcrypt.hash(passwordValue, salt);
 
         // Luo käyttäjä Supabaseen
         const newUser = await prisma.user.create({
             data: {
-                username,
-                email,
+                username: trimmedUsername,
+                email: normalizedEmail,
                 password: hashedPassword
             }
         });
@@ -68,14 +88,24 @@ router.post('/register', async (req, res) => {
 router.post('/login', async (req, res) => {
     try {
         const { email, password } = req.body;
+        const normalizedEmail = typeof email === 'string' ? normalizeEmail(email) : '';
+        const passwordValue = typeof password === 'string' ? password : '';
+
+        if (!normalizedEmail || !passwordValue) {
+            return res.status(400).json({ message: 'Please fill in all fields' });
+        }
+
+        if (!isValidEmail(normalizedEmail)) {
+            return res.status(400).json({ message: 'Please enter a valid email address' });
+        }
 
         // Etsi käyttäjä Supabasesta
         const user = await prisma.user.findUnique({
-            where: { email: email }
+            where: { email: normalizedEmail }
         });
 
         // Check password and send JWT token
-        if (user && (await bcrypt.compare(password, user.password))) {
+        if (user && (await bcrypt.compare(passwordValue, user.password))) {
             res.json({
                 id: user.id,
                 username: user.username,

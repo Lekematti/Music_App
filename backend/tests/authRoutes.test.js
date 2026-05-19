@@ -41,6 +41,19 @@ describe('Auth API Routes', () => {
       expect(response.status).toBe(400);
       expect(response.body.message).toContain('already exists');
     });
+
+    it('Should return 400 for invalid email format', async () => {
+      const response = await request(app)
+        .post('/api/auth/register')
+        .send({
+          username: 'testuser',
+          email: 'invalid-email',
+          password: 'password123',
+        });
+
+      expect(response.status).toBe(400);
+      expect(response.body.message).toBe('Please enter a valid email address');
+    });
   });
 
   describe('POST /api/auth/login', () => {
@@ -72,6 +85,18 @@ describe('Auth API Routes', () => {
 
       expect(response.status).toBe(400);
       expect(response.body.message).toBe('Invalid email or password');
+    });
+
+    it('Should return 400 for invalid email format', async () => {
+      const response = await request(app)
+        .post('/api/auth/login')
+        .send({
+          email: 'invalid-email',
+          password: 'password123',
+        });
+
+      expect(response.status).toBe(400);
+      expect(response.body.message).toBe('Please enter a valid email address');
     });
   });
 });

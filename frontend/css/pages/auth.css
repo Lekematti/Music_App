@@ -28,6 +28,17 @@
 	gap: 20px;
 }
 
+.auth-message {
+	min-height: 20px;
+	font-size: 14px;
+	line-height: 1.4;
+	color: #ff7b7b;
+}
+
+.auth-message[data-type='success'] {
+	color: #8fd694;
+}
+
 .form-group {
 	display: flex;
 	flex-direction: column;
