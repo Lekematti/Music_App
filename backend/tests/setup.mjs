@@ -1,5 +1,9 @@
 import { spawnSync } from 'node:child_process';
 import path from 'node:path';
+import { afterAll, beforeAll } from 'vitest';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 const rootDir = process.cwd();
 const prismaDir = path.join(rootDir, 'backend', 'prisma');
@@ -42,19 +46,42 @@ export async function teardown() {
   }
 
   // Truncate all tables
-  const { PrismaClient } = await import('@prisma/client');
-  const prisma = new PrismaClient();
+  const { default: prisma } = await import('../prisma/prismaClient.js');
+
+  if (!prisma || typeof prisma.$executeRawUnsafe !== 'function') {
+    return;
+  }
 
   try {
-    await prisma.$executeRawUnsafe(`
-      TRUNCATE TABLE "Like" CASCADE;
-      TRUNCATE TABLE "Song" CASCADE;
-      TRUNCATE TABLE "User" CASCADE;
-    `);
-    console.log('✓ Test database cleaned.\n');
+    // Delete only test data created by tests (email starts with test- and ends with @example.com)
+    await prisma.like.deleteMany({
+      where: {
+        user: { email: { startsWith: 'test-', endsWith: '@example.com' } }
+      }
+    });
+
+    await prisma.song.deleteMany({
+      where: {
+        user: { email: { startsWith: 'test-', endsWith: '@example.com' } }
+      }
+    });
+
+    await prisma.user.deleteMany({
+      where: { email: { startsWith: 'test-', endsWith: '@example.com' } }
+    });
+
+    console.log('✓ Test data user data cleaned (real data untouched).\n');
   } catch (error) {
     console.warn('Warning: Failed to truncate database:', error.message);
   } finally {
     await prisma.$disconnect();
   }
 }
+
+afterAll(async () => {
+  await teardown();
+});
+
+beforeAll(async () => {
+  await teardown();
+});

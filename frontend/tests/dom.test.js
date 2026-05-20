@@ -19,12 +19,17 @@ describe('Navigation and DOM Component tests', () => {
         }
     });
     
-    it('Index page should contain music-card elements', () => {
+    it('Index page should contain dynamic containers for songs', () => {
         const html = fs.readFileSync(path.resolve(__dirname, '../index.html'), 'utf-8');
         document.body.innerHTML = html;
 
-        const songCards = document.querySelectorAll('music-card');
-        expect(songCards.length).toBeGreaterThan(0);
+        const top10Widget = document.getElementById('top10-widget');
+        const pastUploadsWidget = document.getElementById('past-uploads-widget');
+        const newUploadsList = document.getElementById('new-uploads-list');
+
+        expect(top10Widget).not.toBeNull();
+        expect(pastUploadsWidget).not.toBeNull();
+        expect(newUploadsList).not.toBeNull();
     });
 
     it('Music card component should correctly render attributes', () => {

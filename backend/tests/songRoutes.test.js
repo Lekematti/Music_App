@@ -19,14 +19,14 @@ describe('Song API Routes', () => {
     beforeEach(async () => {
         process.env.JWT_SECRET = 'testsecret';
         
-        // Luodaan käyttäjä
+        // Create test user
         testUser = uniqueUser();
         const res = await request(app).post('/api/auth/register').send(testUser);
         token = res.body.token;
     });
 
     afterEach(async () => {
-        // Tuhoa biisit ja käyttäjä jottei testit häiritse toisiaan
+        // Clean up test data to avoid test interference
         await prisma.song.deleteMany({
             where: {
                 user: {
@@ -81,11 +81,11 @@ describe('Song API Routes', () => {
                 .post('/api/songs')
                 .set('Authorization', `Bearer ${token}`)
                 .send({
-                    title: 'Test Song' // puuttuu artist ja url
+                    title: 'Test Song' // missing artist and url
                 });
             
             expect(response.status).toBe(400);
-            expect(response.body.message).toContain('pakollisia');
+            expect(response.body.message).toContain('required');
         });
     });
 });

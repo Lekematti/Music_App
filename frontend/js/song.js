@@ -1,30 +1,38 @@
-document.addEventListener("DOMContentLoaded", () => {
-    // Mock database
-    const mockSongs = {
-        '1': { title: 'Example Song 1', artist: 'Artist A' },
-        '2': { title: 'Test Track 2', artist: 'Artist B' },
-        '3': { title: 'Great Summer Hit', artist: 'Artist C' }
-    };
-
+document.addEventListener("DOMContentLoaded", async () => {
     // Get song ID from URL parameters (?id=1)
     const urlParams = new URLSearchParams(globalThis.location.search);
     const songId = urlParams.get('id');
 
-    // Set song info or show default
-    const song = songId && mockSongs[songId] 
-        ? mockSongs[songId] 
-        : { title: 'Unknown Song', artist: 'No artist' };
+    let song = { title: 'Unknown Song', artist: 'No artist', url: '' };
+
+    if (songId) {
+        try {
+            const response = await fetch(`/api/songs/${songId}`);
+            if (response.ok) {
+                song = await response.json();
+            } else {
+                console.error('Failed to fetch song details');
+                song = { title: 'Song not found', artist: 'Unknown', url: '' };
+            }
+        } catch (error) {
+            console.error('Error fetching song:', error);
+            song = { title: 'Error loading song', artist: 'Unknown', url: '' };
+        }
+    }
 
     // Update UI
     document.getElementById('song-title').textContent = song.title;
     document.getElementById('song-artist').textContent = song.artist;
 
     // Play button logic
-    const playBtn = document.querySelector('audio-player-component').querySelector('.mock-play-btn');
-    if (playBtn) {
-        playBtn.addEventListener('click', () => {
-            alert(`Mock: Playing "${song.title}"`);
-        });
+    const playerComponent = document.querySelector('audio-player-component');
+    if (playerComponent) {
+        const playBtn = playerComponent.querySelector('.mock-play-btn');
+        if (playBtn) {
+            playBtn.addEventListener('click', () => {
+                alert(`Playing "${song.title}" from URL: ${song.url || 'No URL given'}`);
+            });
+        }
     }
 });
 

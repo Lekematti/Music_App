@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
+const path = require('node:path');
 
 dotenv.config();
 
@@ -17,7 +18,7 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Routes
+// Routes (API routes must come before static files)
 app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/songs', require('./routes/songRoutes'));
 
@@ -30,15 +31,22 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'OK', timestamp: new Date() });
 });
 
+// Serve frontend static files (must come after API routes)
+app.use(express.static(path.join(__dirname, '../frontend')));
+
+// SPA fallback - serve index.html for non-API routes (for client-side routing)
+app.use((req, res) => {
+  // Don't serve SPA fallback for API routes or root path
+  if (req.path.startsWith('/api') || req.path === '/') {
+    return res.status(404).json({ error: 'Not Found' });
+  }
+  res.sendFile(path.join(__dirname, '../frontend/index.html'));
+});
+
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).json({ error: 'Internal Server Error', message: err.message });
-});
-
-// 404 handler
-app.use((req, res) => {
-  res.status(404).json({ error: 'Not Found' });
 });
 
 // Start server

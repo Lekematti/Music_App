@@ -29,9 +29,9 @@ describe('Backend API Routes', () => {
     expect(response.body).toHaveProperty('timestamp');
   });
 
-  it('GET /unknown-route should return 404', async () => {
+  it('GET /unknown-route should serve SPA (index.html)', async () => {
     const response = await request(app).get('/unknown-route');
-    expect(response.status).toBe(404);
-    expect(response.body).toEqual({ error: 'Not Found' });
+    expect(response.status).toBe(200);
+    expect(response.type).toMatch(/html/);
   });
 });

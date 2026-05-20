@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
-const prisma = require('../prisma/prismaClient'); // Prisma-tietokantayhteys
+const prisma = require('../prisma/prismaClient'); // Prisma database connection
 const { protect } = require('../middleware/authMiddleware');
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -43,7 +43,7 @@ router.post('/register', async (req, res) => {
             return res.status(400).json({ message: 'Password must be at least 6 characters long' });
         }
 
-        // Tarkista onko email tai username jo tietokannassa
+        // Check if email or username already exists in database
         const userExists = await prisma.user.findFirst({
             where: {
                 OR: [
@@ -61,7 +61,7 @@ router.post('/register', async (req, res) => {
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(passwordValue, salt);
 
-        // Luo käyttäjä Supabaseen
+        // Create user in the database
         const newUser = await prisma.user.create({
             data: {
                 username: trimmedUsername,
@@ -99,7 +99,7 @@ router.post('/login', async (req, res) => {
             return res.status(400).json({ message: 'Please enter a valid email address' });
         }
 
-        // Etsi käyttäjä Supabasesta
+        // Find user in database by email
         const user = await prisma.user.findUnique({
             where: { email: normalizedEmail }
         });
@@ -126,7 +126,7 @@ router.post('/login', async (req, res) => {
 // @access  Private (Requires JWT token)
 router.get('/me', protect, async (req, res) => {
     try {
-        // Etsi käyttäjä Supabasesta JWT:n antamalla sähköpostilla (tai ID:llä)
+        // Find user in database using email from JWT
         const user = await prisma.user.findUnique({
             where: { email: req.user.email }
         });

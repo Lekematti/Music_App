@@ -18,13 +18,7 @@
 				<h2>Top 10</h2>
 				<a href="./pages/top10.html" class="view-all">View all</a>
 			</div>
-			<div class="horizontal-list">
-				 <music-card song-id="1" title="Song Name" artist="Artist"></music-card>
-				 <music-card song-id="1" title="Song Name" artist="Artist"></music-card>
-				 <music-card song-id="1" title="Song Name" artist="Artist"></music-card>
-				 <music-card song-id="1" title="Song Name" artist="Artist"></music-card>
-				 <music-card song-id="1" title="Song Name" artist="Artist"></music-card>
-			</div>
+			<div class="horizontal-list" id="top10-widget"></div>
 		</section>
 
 		<!-- Past Uploads -->
@@ -33,11 +27,7 @@
 				<h2>Past Uploads</h2>
 				<a href="./pages/past-uploads.html" class="view-all">View all</a>
 			</div>
-			<div class="horizontal-list">
-				 <music-list-item song-id="1" title="Song Name" artist="Artist"></music-list-item>
-				 <music-list-item song-id="1" title="Song Name" artist="Artist"></music-list-item>
-				 <music-list-item song-id="1" title="Song Name" artist="Artist"></music-list-item>
-			</div>
+			<div class="horizontal-list" id="past-uploads-widget"></div>
 		</section>
 
 		<!-- New Uploads -->
@@ -46,10 +36,8 @@
 				<h2>New Uploads</h2>
 				<a href="./pages/new-uploads.html" class="view-all">View all</a>
 			</div>
-			<div class="horizontal-list">
-				 <music-list-item song-id="1" title="Song Name" artist="Artist"></music-list-item>
-				 <music-list-item song-id="1" title="Song Name" artist="Artist"></music-list-item>
-				 <music-list-item song-id="1" title="Song Name" artist="Artist"></music-list-item>
+			<div class="horizontal-list" id="new-uploads-list">
+				 <!-- Songs will be dynamically inserted here -->
 			</div>
 		</section>
 	</main>
@@ -94,5 +82,6 @@
     <script src="./js/components/list-row-item.js"></script>
     <script src="./js/components/publication-item.js"></script>
     <script src="./js/components/back-button.js"></script>
+    <script src="./js/home.js"></script>
 </body>
 </html>

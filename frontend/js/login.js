@@ -47,7 +47,7 @@ loginForm.addEventListener('submit', async function(event) {
         }
 
         localStorage.setItem('isLoggedIn', 'true');
-        localStorage.setItem('authToken', data.token);
+        localStorage.setItem('token', data.token);
         localStorage.setItem('userEmail', data.email);
 
         globalThis.location.href = '../index.html';
