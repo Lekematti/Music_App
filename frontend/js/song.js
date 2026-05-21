@@ -26,13 +26,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     // Play button logic
     const playerComponent = document.querySelector('audio-player-component');
-    if (playerComponent) {
-        const playBtn = playerComponent.querySelector('.mock-play-btn');
-        if (playBtn) {
-            playBtn.addEventListener('click', () => {
-                alert(`Playing "${song.title}" from URL: ${song.url || 'No URL given'}`);
-            });
-        }
+    if (playerComponent && song.url) {
+        playerComponent.setAttribute('src', song.url);
     }
 });
 
