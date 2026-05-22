@@ -22,6 +22,7 @@ const response = await fetch('/api/songs/top/liked?limit=10');
                 item.setAttribute('rank', `${index + 1}.`);
                 item.setAttribute('title', song.title);
                 item.setAttribute('artist', song.artist);
+                if (song.imageUrl) item.setAttribute('image', song.imageUrl);
                 
                 listContainer.appendChild(item);
             });

@@ -21,10 +21,13 @@ document.addEventListener('DOMContentLoaded', async () => {
         const response = await fetch(`/api/songs?userId=${currentUserId}`);
         
         if (response.ok) {
-            const songs = await response.json();
-            
+            let songs = await response.json();
+
+            // Sort chronologically (oldest first)
+            songs.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+
             listContainer.innerHTML = '';
-            
+
             if (songs.length === 0) {
                 listContainer.innerHTML = '<p style="color: #888;">You haven\'t uploaded any music yet.</p>';
                 return;
@@ -38,7 +41,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                 item.setAttribute('title', song.title);
                 item.setAttribute('artist', song.artist);
                 item.setAttribute('score', song.likes ? song.likes.length : 0);
-                
+                if (song.imageUrl) item.setAttribute('image', song.imageUrl);
+
                 listContainer.appendChild(item);
             });
         } else {

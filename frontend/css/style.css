@@ -11,3 +11,49 @@
 @import url("./pages/lists.css");
 @import url("./pages/profile.css");
 @import url("./pages/upload.css");
+
+/* Themed scrollbar for dark UI */
+/* Apply to horizontal scrollers and publication lists */
+.horizontal-list, .publication-list, .music-list-page, .profile-content {
+	scrollbar-width: thin;
+	scrollbar-color: rgba(255,255,255,0.12) transparent;
+}
+
+/* WebKit-based browsers */
+.horizontal-list::-webkit-scrollbar,
+.publication-list::-webkit-scrollbar,
+.music-list-page::-webkit-scrollbar,
+.profile-content::-webkit-scrollbar {
+	height: 10px;
+	width: 10px;
+}
+
+.horizontal-list::-webkit-scrollbar-track,
+.publication-list::-webkit-scrollbar-track,
+.music-list-page::-webkit-scrollbar-track,
+.profile-content::-webkit-scrollbar-track {
+	background: transparent;
+}
+
+.horizontal-list::-webkit-scrollbar-thumb,
+.publication-list::-webkit-scrollbar-thumb,
+.music-list-page::-webkit-scrollbar-thumb,
+.profile-content::-webkit-scrollbar-thumb {
+	background-color: rgba(255,255,255,0.06);
+	border-radius: 999px;
+	border: 2px solid transparent;
+	background-clip: padding-box;
+}
+
+.horizontal-list::-webkit-scrollbar-thumb:hover,
+.publication-list::-webkit-scrollbar-thumb:hover,
+.music-list-page::-webkit-scrollbar-thumb:hover,
+.profile-content::-webkit-scrollbar-thumb:hover {
+	background-color: rgba(255,255,255,0.12);
+}
+
+/* Thin track on mac/firefox */
+.horizontal-list::-webkit-scrollbar-corner,
+.publication-list::-webkit-scrollbar-corner {
+	background: transparent;
+}

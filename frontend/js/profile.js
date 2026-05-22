@@ -66,6 +66,42 @@ const loadUserProfile = async () => {
             const publicationList = document.querySelector('.publication-list');
             if (publicationList) {
                 publicationList.innerHTML = '';
+
+                if (!publicationList.dataset.deleteListenerAttached) {
+                    publicationList.addEventListener('publication-delete', async (event) => {
+                        const { songId, title } = event.detail || {};
+                        if (!songId) {
+                            return;
+                        }
+
+                        const confirmed = globalThis.confirm(`Delete "${title}"? This cannot be undone.`);
+                        if (!confirmed) {
+                            return;
+                        }
+
+                        try {
+                            const token = localStorage.getItem('token');
+                            const deleteResponse = await fetch(`/api/songs/${songId}`, {
+                                method: 'DELETE',
+                                headers: {
+                                    'Authorization': `Bearer ${token}`,
+                                },
+                            });
+
+                            if (!deleteResponse.ok) {
+                                const errorData = await deleteResponse.json();
+                                throw new Error(errorData.message || 'Failed to delete song');
+                            }
+
+                            loadUserProfile();
+                        } catch (error) {
+                            console.error('Error deleting song:', error);
+                            alert(error.message || 'Unable to delete song.');
+                        }
+                    });
+
+                    publicationList.dataset.deleteListenerAttached = 'true';
+                }
                 
                 if (userSongs.length === 0) {
                     publicationList.innerHTML = '<p style="color: #888;">You haven\'t published any music yet.</p>';
@@ -73,30 +109,22 @@ const loadUserProfile = async () => {
                     userSongs.forEach(song => {
                         const pubDate = new Date(song.createdAt).toLocaleDateString('en-US');
                         const songLikes = song.likes ? song.likes.length : 0;
-                        
-                        const pubItem = document.createElement('a');
-                        pubItem.href = `./song.html?id=${song.id}`;
-                        pubItem.className = 'publication-item';
-                        pubItem.style.textDecoration = 'none';
-                        pubItem.style.color = 'inherit';
-                        
-                        pubItem.innerHTML = `
-                            <div class="pub-icon">
-                                <img src="../assets/icons/m.png" alt="Music" style="width: 20px; filter: invert(1);">
-                            </div>
-                            <div class="pub-info">
-                                <h4>${song.title}</h4>
-                                <p>Published: ${pubDate}</p>
-                            </div>
-                            <div class="pub-stats">
-                                <span style="color: #888; font-size: 12px;">${songLikes} like${songLikes !== 1 ? 's' : ''}</span>
-                            </div>
-                            <button class="pub-more">⋮</button>
-                        `;
-                        
+
+                        const pubItem = document.createElement('publication-item');
+                        pubItem.setAttribute('title', song.title);
+                        pubItem.setAttribute('artist', song.artist);
+                        pubItem.setAttribute('subtitle', `Published: ${pubDate}`);
+                        pubItem.setAttribute('song-id', song.id);
+                        if (song.imageUrl) {
+                            pubItem.setAttribute('image', song.imageUrl);
+                        }
+                        pubItem.setAttribute('stats', `${songLikes} like${songLikes !== 1 ? 's' : ''}`);
+                        pubItem.setAttribute('show-menu', '');
+
                         publicationList.appendChild(pubItem);
                     });
                 }
+
             }
         }
     } catch (error) {

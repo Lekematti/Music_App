@@ -4,9 +4,10 @@ document.addEventListener("DOMContentLoaded", () => {
         
         const title = document.getElementById('title').value;
         const artist = document.getElementById('artist').value;
-        const url = document.getElementById('url').value;
-        const imageUrl = document.getElementById('imageUrl').value || null;
+        const audioFile = document.getElementById('audioFile').files[0];
+        const imageFile = document.getElementById('imageFile').files[0];
         const messageEl = document.getElementById('upload-message');
+        const submitBtn = e.target.querySelector('button[type="submit"]');
 
         try {
             // Get user token from localStorage
@@ -18,13 +19,31 @@ document.addEventListener("DOMContentLoaded", () => {
                 return;
             }
 
-            const res = await fetch('/api/songs', {
+            if (!audioFile) {
+                 messageEl.textContent = "Please select an audio file.";
+                 messageEl.className = "upload-message-error";
+                 return;
+            }
+
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Uploading...';
+            messageEl.textContent = 'Uploading files...';
+            messageEl.className = "";
+
+            const formData = new FormData();
+            formData.append('title', title);
+            formData.append('artist', artist);
+            formData.append('audioFile', audioFile);
+            if (imageFile) {
+                formData.append('imageFile', imageFile);
+            }
+
+            const res = await fetch('/api/uploads', {
                 method: 'POST',
-                headers: { 
-                    'Content-Type': 'application/json',
+                headers: {
                     'Authorization': `Bearer ${token}`
                 },
-                body: JSON.stringify({ title, artist, url, imageUrl })
+                body: formData
             });
 
             if (res.ok) {
@@ -38,8 +57,11 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         } catch (err) {
             console.error(err);
-            messageEl.textContent = "Server error. Please try again later.";
+            messageEl.textContent = err.message || "Server error. Please try again later.";
             messageEl.className = "upload-message-error";
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Upload';
         }
     });
 });

@@ -32,18 +32,18 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="url">Audio File URL (temporary)</label>
+                    <label for="audioFile">Audio File (MP3)</label>
                     <div class="input-wrapper">
-                        <span class="input-icon">🔗</span>
-                        <input type="url" id="url" required placeholder="https://example.com/song.mp3">
+                        <span class="input-icon">🎵</span>
+                        <input type="file" id="audioFile" accept="audio/mp3,audio/mpeg" required>
                     </div>
                 </div>
 
                 <div class="form-group">
-                    <label for="imageUrl">Cover Image URL (optional)</label>
+                    <label for="imageFile">Cover Image (optional)</label>
                     <div class="input-wrapper">
                         <span class="input-icon">🖼️</span>
-                        <input type="url" id="imageUrl" placeholder="https://example.com/cover.jpg">
+                        <input type="file" id="imageFile" accept="image/jpeg,image/png,image/webp">
                     </div>
                 </div>
 
@@ -58,6 +58,6 @@
     <script src="../js/components/menu.js"></script>
 
     <!-- Upload logic -->
-    <script src="../js/upload.js"></script>
+    <script type="module" src="../js/upload.js"></script>
 </body>
 </html>

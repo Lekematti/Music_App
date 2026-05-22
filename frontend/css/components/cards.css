@@ -20,6 +20,90 @@
 	margin-bottom: 10px;
 }
 
+/* When a card has a cover image, show the cover above the text (column)
+   and keep consistent sizing so the image doesn't push the layout */
+.card.has-cover {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+}
+
+.card .card-cover {
+	width: 100%;
+	max-width: 360px; /* prevent extremely wide covers */
+	aspect-ratio: 1 / 1; /* force square */
+	object-fit: contain; /* show whole image while preserving aspect */
+	border-radius: 6px;
+	background: #16171b; /* match card background so letterbox blends in */
+	display: block;
+	margin: 0 auto; /* center within the card */
+}
+
+.card .card-body {
+    flex: none;
+}
+
+@media (min-width: 900px) {
+    .card .card-cover {
+		aspect-ratio: 1 / 1;
+    }
+}
+
+/* Constrain cards that appear in horizontal scrollers (Top 10, New uploads)
+   so they remain compact and their covers keep a square aspect */
+.horizontal-list .card {
+	width: 180px;
+	flex: 0 0 auto;
+}
+
+.horizontal-list .card .card-cover {
+	width: 100%;
+	max-width: 160px; /* constrain top10 cover width */
+	min-width: 80px;
+	aspect-ratio: 1 / 1;
+	height: auto;
+	object-fit: contain; /* show the whole image inside the card for Top 10 */
+	padding: 4px;
+	box-sizing: border-box;
+	margin: 0 auto;
+}
+
+/* Song page: constrain the large card cover so it doesn't grow too big or too small */
+.auth-card .card-cover {
+	display: block;
+	width: 100%;
+	max-width: 360px; /* don't exceed this width */
+	min-width: 120px; /* don't be smaller than this */
+	aspect-ratio: 1 / 1; /* square */
+	object-fit: contain; /* show whole image while preserving aspect */
+	border-radius: 8px;
+	margin: 0 auto 20px;
+}
+
+/* Player cover (inside player component) */
+.player-cover {
+	width: 96px;
+	height: 96px;
+	aspect-ratio: 1 / 1;
+	object-fit: contain;
+	border-radius: 8px;
+	background: transparent;
+}
+/* player image removed — styling not needed */
+
+/* small thumbnail for list items */
+.list-item .media-cover {
+	width: 48px;
+	height: 48px;
+	aspect-ratio: 1 / 1;
+	object-fit: contain; /* show the whole image inside the box */
+	border-radius: 4px;
+	background: transparent;
+	padding: 3px; /* give a little breathing room */
+	box-sizing: border-box;
+	flex-shrink: 0;
+}
+
 .card h3 {
 	font-size: 14px;
 	margin-bottom: 5px;

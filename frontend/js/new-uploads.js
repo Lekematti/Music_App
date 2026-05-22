@@ -9,12 +9,15 @@ document.addEventListener('DOMContentLoaded', async () => {
             
             if (response.ok) {
                 const allSongs = await response.json();
-                
-                // Calculate pagination
-                const totalPages = Math.ceil(allSongs.length / itemsPerPage);
+
+                // Limit to the 50 newest songs (server returns newest first)
+                const newest50 = allSongs.slice(0, 50);
+
+                // Calculate pagination on the limited set
+                const totalPages = Math.ceil(newest50.length / itemsPerPage);
                 const startIndex = (page - 1) * itemsPerPage;
                 const endIndex = startIndex + itemsPerPage;
-                const songs = allSongs.slice(startIndex, endIndex);
+                const songs = newest50.slice(startIndex, endIndex);
                 
                 listContainer.innerHTML = '';
                 
@@ -31,6 +34,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     item.setAttribute('rank', `${rankNumber}.`);
                     item.setAttribute('title', song.title);
                     item.setAttribute('artist', song.artist);
+                    if (song.imageUrl) item.setAttribute('image', song.imageUrl);
                     
                     listContainer.appendChild(item);
                 });
