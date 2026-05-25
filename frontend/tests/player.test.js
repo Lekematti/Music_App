@@ -32,10 +32,10 @@ describe('Player component', () => {
     });
 
     it('renders player and accepts src attribute', async () => {
-        const html = fs.readFileSync(path.resolve(__dirname, '../pages/song.html'), 'utf-8');
+        const html = fs.readFileSync(path.resolve(__dirname, '../index.html'), 'utf-8');
         document.body.innerHTML = html;
 
-        const player = document.querySelector('audio-player-component');
+        const player = document.querySelector('#global-player');
         expect(player).not.toBeNull();
 
         // set a fake src and ensure it updates

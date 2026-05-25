@@ -1,5 +1,8 @@
 document.addEventListener('DOMContentLoaded', async () => {
     const listContainer = document.getElementById('new-uploads-list');
+    if (!listContainer) {
+        return;
+    }
     const itemsPerPage = 20;
 
     async function loadSongs(page = 1) {

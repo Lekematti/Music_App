@@ -1,10 +1,7 @@
 // Create a Web Component for the side menu
 class SideMenuComponent extends HTMLElement {
     connectedCallback() {
-        // Detect if we are in a subdirectory (pages)
-        const isPagesDir = globalThis.location.pathname.includes('/pages/');
-        const basePath = isPagesDir ? '../' : './';
-        const pagesPath = isPagesDir ? './' : './pages/';
+        const basePath = '/';
 
         // Render HTML inside the component
         this.innerHTML = `
@@ -14,9 +11,9 @@ class SideMenuComponent extends HTMLElement {
                     <button id="close-btn" class="close-btn">X</button>
                 </div>
                 <ul class="side-menu-list">
-                    <li><a href="${pagesPath}profile.html"><img src="${basePath}assets/icons/profile.png" alt="Profile" class="menu-icon"> Profile</a></li>
-                    <li><a href="${pagesPath}upload.html"><img src="${basePath}assets/icons/upload.png" alt="Upload" class="menu-icon"> Upload</a></li>
-                    <li><a href="${pagesPath}settings.html"><img src="${basePath}assets/icons/settings.png" alt="Settings" class="menu-icon"> Settings</a></li>
+                    <li><a href="/pages/profile.html"><img src="${basePath}assets/icons/profile.png" alt="Profile" class="menu-icon"> Profile</a></li>
+                    <li><a href="/pages/upload.html"><img src="${basePath}assets/icons/upload.png" alt="Upload" class="menu-icon"> Upload</a></li>
+                    <li><a href="/pages/settings.html"><img src="${basePath}assets/icons/settings.png" alt="Settings" class="menu-icon"> Settings</a></li>
                 </ul>
             </aside>
         `;

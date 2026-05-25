@@ -20,7 +20,7 @@ const getSupabase = () => {
             supabase = createClient(supabaseUrl, supabaseServiceKey);
         } catch (e) {
             supabase = null;
-            console.error('Failed to create Supabase client:', e && e.message ? e.message : e);
+            console.error('Failed to create Supabase client:', e?.message ?? e);
         }
     }
     return supabase;

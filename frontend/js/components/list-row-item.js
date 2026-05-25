@@ -7,11 +7,8 @@ class ListRowItemComponent extends HTMLElement {
         const score = this.getAttribute('score') || '5';
         const image = this.getAttribute('image') || '';
         
-        const isPagesDir = globalThis.location.pathname.includes('/pages/');
-        const pagesPath = isPagesDir ? './' : './pages/';
-        
         this.innerHTML = `
-            <a href="${pagesPath}song.html?id=${songId}" class="list-row" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 10px;">
+            <a href="/pages/song.html?id=${songId}" class="list-row" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 10px;">
                 <span class="row-number">${rank}</span>
                 ${image ? `<img class="media-cover" src="${image}" alt="cover" loading="lazy">` : `<div class="item-icon">🎵</div>`}
                 <div class="item-info">

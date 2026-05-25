@@ -5,11 +5,8 @@ class MusicListItemComponent extends HTMLElement {
         const songId = this.getAttribute('song-id') || '1';
         const image = this.getAttribute('image') || '';
         
-        const isPagesDir = globalThis.location.pathname.includes('/pages/');
-        const pagesPath = isPagesDir ? './' : './pages/';
-        
         this.innerHTML = `
-            <a href="${pagesPath}song.html?id=${songId}" class="list-item" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 10px;">
+            <a href="/pages/song.html?id=${songId}" class="list-item" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 10px;">
                 ${image ? `<img class="media-cover" src="${image}" alt="cover" loading="lazy">` : `<div class="item-icon">🎵</div>`}
                 <div class="item-info">
                     <h4 style="margin: 0; font-size: 14px;">${title}</h4>

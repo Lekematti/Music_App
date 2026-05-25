@@ -24,17 +24,28 @@ class AudioPlayerComponent extends HTMLElement {
 
     render() {
         const src = this.getAttribute('src') || '';
-        const image = this.getAttribute('image') || '';
+        const title = this.getAttribute('title') || '';
+        const artist = this.getAttribute('artist') || '';
+        const songId = this.getAttribute('song-id') || '';
+        let titleMarkup = '';
+
+        if (title) {
+            titleMarkup = songId
+                ? `<a href="/pages/song.html?id=${encodeURIComponent(songId)}" style="color: inherit; text-decoration: none;"><strong style="display:block;color:#fff;">${title}</strong></a>`
+                : `<strong style="display:block;color:#fff;">${title}</strong>`;
+        }
+        const artistMarkup = artist ? `<span style="color:#aaa;font-size:12px;">${artist}</span>` : '';
+        const metaMarkup = title || artist ? `<div style="text-align:center;">${titleMarkup}${artistMarkup}</div>` : '';
         this.innerHTML = `
-            <div class="player-wrapper" style="padding: 24px; background: #0d0e12; border: 1px solid #2a2a2a; border-radius: 8px; margin: 20px 0; text-align: center;">
+            <div class="player-wrapper" style="padding: 10px; background: #0d0e12; border: 1px solid #2a2a2a; border-radius: 8px; margin: 12px 0; text-align: center;">
                 ${src ? `
                     <audio class="player-audio" preload="auto"></audio>
-                    <div class="player-meta" style="margin-bottom: 18px; display:flex; align-items:center; gap:12px; justify-content:center;">
-                        ${image ? `<img class="player-cover" src="${image}" alt="cover" loading="lazy" style="width:96px;height:96px;object-fit:contain;border-radius:8px;">` : ''}
-                        <p class="player-status" style="color: #666; margin: 0; font-size: 14px;">Loading audio...</p>
+                    <div class="player-meta" style="margin-bottom: 8px; display:flex; flex-direction:column; align-items:center; gap:4px; justify-content:center;">
+                        ${metaMarkup}
+                        <p class="player-status" style="color: #666; margin: 0; font-size: 12px;">Loading audio...</p>
                     </div>
 
-                    <div class="player-seek-row" style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
+                    <div class="player-seek-row" style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
                         <span class="player-current-time" style="color: #888; font-size: 12px; min-width: 42px; text-align: left;">0:00</span>
                         <div class="player-progress" role="slider" aria-label="Seek audio position" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" tabindex="0" style="flex: 1; height: 12px; display: flex; align-items: center; cursor: pointer;">
                             <div class="player-track" style="position: relative; width: 100%; height: 4px; background: #2a2a2a; border-radius: 999px; overflow: hidden;">
@@ -43,14 +54,13 @@ class AudioPlayerComponent extends HTMLElement {
                         </div>
                         <span class="player-duration" style="color: #888; font-size: 12px; min-width: 42px; text-align: right;">0:00</span>
                     </div>
-
-                    <div style="display: flex; justify-content: center; align-items: center; gap: 16px;">
-                        <button type="button" class="player-skip-back" aria-label="Skip back 10 seconds" style="background: none; border: none; color: #aaa; font-size: 16px; cursor: pointer;">⏪ 10s</button>
-                        <button type="button" class="player-toggle" style="background: white; color: black; border: none; border-radius: 50%; width: 58px; height: 58px; font-size: 22px; cursor: pointer; display: flex; justify-content: center; align-items: center; box-shadow: 0 4px 10px rgba(0,0,0,0.3);">▶</button>
-                        <button type="button" class="player-skip-forward" aria-label="Skip forward 10 seconds" style="background: none; border: none; color: #aaa; font-size: 16px; cursor: pointer;">10s ⏩</button>
+                    <div style="display: flex; justify-content: center; align-items: center; gap: 10px;">
+                        <button type="button" class="player-skip-back" aria-label="Skip back 10 seconds" style="background: none; border: none; color: #aaa; font-size: 14px; cursor: pointer;">⏪</button>
+                        <button type="button" class="player-toggle" style="background: white; color: black; border: none; border-radius: 50%; width: 44px; height: 44px; font-size: 18px; cursor: pointer; display: flex; justify-content: center; align-items: center; box-shadow: 0 4px 8px rgba(0,0,0,0.25);">▶</button>
+                        <button type="button" class="player-skip-forward" aria-label="Skip forward 10 seconds" style="background: none; border: none; color: #aaa; font-size: 14px; cursor: pointer;">⏩</button>
                     </div>
                 ` : `
-                    <p style="color: #666; font-size: 14px; font-style: italic;">No audio URL available for this song.</p>
+                    <p style="color: #666; font-size: 12px; font-style: italic;">No audio URL available for this song.</p>
                 `}
             </div>
         `;
@@ -138,6 +148,10 @@ class AudioPlayerComponent extends HTMLElement {
                 this.audio.src = this.objectUrl;
                 syncProgress();
                 updateToggleIcon();
+                this.dispatchEvent(new CustomEvent('player-source-ready', {
+                    detail: { src },
+                    bubbles: true,
+                }));
             } catch (error) {
                 console.error('Unable to load audio source:', error);
                 if (this.statusLabel) {
@@ -210,7 +224,7 @@ class AudioPlayerComponent extends HTMLElement {
 
         this.progress.addEventListener('pointerup', stopScrubbing);
         this.progress.addEventListener('pointercancel', stopScrubbing);
-        window.addEventListener('pointerup', stopScrubbing, { once: true });
+        globalThis.addEventListener('pointerup', stopScrubbing, { once: true });
 
         this.progress.addEventListener('keydown', (event) => {
             const duration = this.audio.duration || 0;

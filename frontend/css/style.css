@@ -57,3 +57,36 @@
 .publication-list::-webkit-scrollbar-corner {
 	background: transparent;
 }
+
+/* Global styles for the fixed audio player component */
+audio-player-component {
+	position: fixed;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	z-index: 9999;
+	display: block;
+	pointer-events: auto;
+}
+
+audio-player-component .player-wrapper {
+	margin: 0 !important;
+	border-radius: 0 !important;
+	padding: 8px 12px !important;
+	background: #0d0e12 !important;
+	border-top: 1px solid rgba(255,255,255,0.04) !important;
+	box-shadow: 0 -6px 20px rgba(0,0,0,0.6) !important;
+	max-width: 100%;
+}
+
+/* Compact player controls */
+audio-player-component .player-meta { flex-direction: row !important; gap: 12px !important; align-items: center !important; }
+audio-player-component .player-meta strong { font-size: 14px !important; display: block; }
+audio-player-component .player-meta span { font-size: 12px !important; color: #bdbdbd !important; }
+audio-player-component .player-seek-row { margin-bottom: 6px !important; }
+audio-player-component .player-progress { height: 10px !important; }
+audio-player-component .player-track { height: 6px !important; }
+audio-player-component .player-toggle { width: 36px !important; height: 36px !important; font-size: 16px !important; }
+
+/* Ensure page content isn't obscured by the fixed player */
+body { padding-bottom: 72px; }

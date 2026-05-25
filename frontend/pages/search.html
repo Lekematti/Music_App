@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Music App - Search</title>
+	<link rel="stylesheet" href="../css/style.css">
+	<script src="../js/components/menu.js"></script>
+</head>
+<body>
+	<top-bar-component></top-bar-component>
+
+	<main class="content">
+		<back-button></back-button>
+
+		<section class="music-list-page search-page">
+			<div class="section-header search-page-header">
+				<div>
+					<h2>Search results</h2>
+					<p id="search-summary" class="search-summary">Enter a song or artist name to search.</p>
+				</div>
+			</div>
+
+			<div class="vertical-list" id="search-results">
+				<!-- Content dynamically loaded via JS -->
+			</div>
+		</section>
+	</main>
+	<script src="../js/components/top-bar.js"></script>
+	<script src="../js/components/star-rating.js"></script>
+	<script src="../js/components/list-row-item.js"></script>
+	<script src="../js/components/publication-item.js"></script>
+	<script src="../js/components/back-button.js"></script>
+	<script src="../js/search.js"></script>
+	<script src="../js/router.js"></script>
+</body>
+</html>

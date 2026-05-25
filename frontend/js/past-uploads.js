@@ -1,5 +1,8 @@
 document.addEventListener('DOMContentLoaded', async () => {
     const listContainer = document.getElementById('past-uploads-list');
+    if (!listContainer) {
+        return;
+    }
     const token = localStorage.getItem('token');
 
     if (!token) {

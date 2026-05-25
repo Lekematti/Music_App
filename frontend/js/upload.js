@@ -1,5 +1,10 @@
 document.addEventListener("DOMContentLoaded", () => {
-    document.getElementById('upload-form').addEventListener('submit', async (e) => {
+    const uploadForm = document.getElementById('upload-form');
+    if (!uploadForm) {
+        return;
+    }
+
+    uploadForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         
         const title = document.getElementById('title').value;

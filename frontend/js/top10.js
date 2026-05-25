@@ -1,9 +1,13 @@
 document.addEventListener('DOMContentLoaded', async () => {
     const listContainer = document.getElementById('top10-list');
 
+    if (!listContainer) {
+        return;
+    }
+
     try {
         // Fetch top 10 liked songs from backend
-const response = await fetch('/api/songs/top/liked?limit=10');
+        const response = await fetch('/api/songs/top/liked?limit=10');
         
         if (response.ok) {
             const songs = await response.json();

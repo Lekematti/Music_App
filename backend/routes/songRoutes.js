@@ -17,7 +17,7 @@ const getSupabase = () => {
             supabase = createClient(supabaseUrl, supabaseServiceKey);
         } catch (e) {
             supabase = null;
-            console.error('Failed to create Supabase client:', e && e.message ? e.message : e);
+            console.error('Failed to create Supabase client:', e?.message ?? e);
         }
     }
     return supabase;
@@ -114,6 +114,36 @@ const attachPlayableUrl = async (song) => ({
 
 const attachPlayableUrls = async (songs) => Promise.all(songs.map(attachPlayableUrl));
 
+const normalizeSearchValue = (value) => (typeof value === 'string' ? value.trim().toLocaleLowerCase() : '');
+
+const getSearchRank = (song, search) => {
+    const normalizedSearch = normalizeSearchValue(search);
+    const normalizedTitle = normalizeSearchValue(song.title);
+    const normalizedArtist = normalizeSearchValue(song.artist);
+
+    if (!normalizedSearch) {
+        return 99;
+    }
+
+    if (normalizedTitle === normalizedSearch || normalizedArtist === normalizedSearch) {
+        return 0;
+    }
+
+    if (normalizedTitle.startsWith(normalizedSearch) || normalizedArtist.startsWith(normalizedSearch)) {
+        return 1;
+    }
+
+    if (normalizedTitle.includes(normalizedSearch)) {
+        return 2;
+    }
+
+    if (normalizedArtist.includes(normalizedSearch)) {
+        return 3;
+    }
+
+    return 4;
+};
+
 // @desc    Publish a new song
 // @route   POST /api/songs
 // @access  Private (Requires token)
@@ -159,7 +189,19 @@ router.post('/', protect, async (req, res) => {
 router.get('/', async (req, res) => {
     try {
         const userId = req.query.userId;
-        const whereClause = userId ? { userId: userId } : {};
+        const search = typeof req.query.search === 'string' ? req.query.search.trim() : '';
+        const whereClause = {};
+
+        if (userId) {
+            whereClause.userId = userId;
+        }
+
+        if (search) {
+            whereClause.OR = [
+                { title: { contains: search, mode: 'insensitive' } },
+                { artist: { contains: search, mode: 'insensitive' } },
+            ];
+        }
 
         // Fetch all songs and include publisher (User) details and likes
         const songs = await prisma.song.findMany({
@@ -172,13 +214,22 @@ router.get('/', async (req, res) => {
                     }
                 },
                 likes: true
-            },
-            orderBy: {
-                createdAt: 'desc' // Newest first
             }
         });
 
-        res.json(await attachPlayableUrls(songs));
+        const sortedSongs = search
+            ? songs.sort((left, right) => {
+                const rankDifference = getSearchRank(left, search) - getSearchRank(right, search);
+
+                if (rankDifference !== 0) {
+                    return rankDifference;
+                }
+
+                return new Date(right.createdAt).getTime() - new Date(left.createdAt).getTime();
+            })
+            : songs.sort((left, right) => new Date(right.createdAt).getTime() - new Date(left.createdAt).getTime());
+
+        res.json(await attachPlayableUrls(sortedSongs));
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Server error while fetching songs' });

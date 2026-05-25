@@ -1,6 +1,108 @@
+const getProfileElements = () => {
+    const userNameEl = document.getElementById('user-name');
+    const userEmailEl = document.getElementById('user-email');
+    const avatarImg = document.getElementById('user-avatar-img');
+    const publicationCountEl = document.getElementById('publication-count');
+    const totalLikesEl = document.getElementById('total-likes');
+    const publicationList = document.querySelector('.publication-list');
+
+    if (!userNameEl || !userEmailEl || !avatarImg || !publicationCountEl || !totalLikesEl || !publicationList) {
+        return null;
+    }
+
+    return {
+        userNameEl,
+        userEmailEl,
+        avatarImg,
+        publicationCountEl,
+        totalLikesEl,
+        publicationList,
+    };
+};
+
+const renderProfileSongs = (publicationList, userSongs) => {
+    publicationList.innerHTML = '';
+
+    if (!publicationList.dataset.deleteListenerAttached) {
+        publicationList.addEventListener('publication-delete', async (event) => {
+            const { songId, title } = event.detail || {};
+            if (!songId) {
+                return;
+            }
+
+            const confirmed = globalThis.confirm(`Delete "${title}"? This cannot be undone.`);
+            if (!confirmed) {
+                return;
+            }
+
+            try {
+                const token = localStorage.getItem('token');
+                const deleteResponse = await fetch(`/api/songs/${songId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                    },
+                });
+
+                if (!deleteResponse.ok) {
+                    const errorData = await deleteResponse.json();
+                    throw new Error(errorData.message || 'Failed to delete song');
+                }
+
+                loadUserProfile();
+            } catch (error) {
+                console.error('Error deleting song:', error);
+                alert(error.message || 'Unable to delete song.');
+            }
+        });
+
+        publicationList.dataset.deleteListenerAttached = 'true';
+    }
+
+    if (userSongs.length === 0) {
+        publicationList.innerHTML = '<p style="color: #888;">You haven\'t published any music yet.</p>';
+        return;
+    }
+
+    userSongs.forEach((song) => {
+        const pubDate = new Date(song.createdAt).toLocaleDateString('en-US');
+        const songLikes = song.likes ? song.likes.length : 0;
+
+        const pubItem = document.createElement('publication-item');
+        pubItem.setAttribute('title', song.title);
+        pubItem.setAttribute('artist', song.artist);
+        pubItem.setAttribute('subtitle', `Published: ${pubDate}`);
+        pubItem.setAttribute('song-id', song.id);
+        if (song.imageUrl) {
+            pubItem.setAttribute('image', song.imageUrl);
+        }
+
+        const likesLabel = songLikes === 1 ? 'like' : 'likes';
+        pubItem.setAttribute('stats', `${songLikes} ${likesLabel}`);
+        pubItem.setAttribute('show-menu', '');
+
+        publicationList.appendChild(pubItem);
+    });
+};
+
 // Load user profile data
 const loadUserProfile = async () => {
     try {
+        const profileElements = getProfileElements();
+
+        if (!profileElements) {
+            return;
+        }
+
+        const {
+            userNameEl,
+            userEmailEl,
+            avatarImg,
+            publicationCountEl,
+            totalLikesEl,
+            publicationList,
+        } = profileElements;
+
         const token = localStorage.getItem('token');
         if (!token) {
             console.error('No token found');
@@ -30,11 +132,10 @@ const loadUserProfile = async () => {
         const userData = await userResponse.json();
 
         // Update user info in the card
-        document.getElementById('user-name').textContent = userData.username || 'User';
-        document.getElementById('user-email').textContent = userData.email || '';
+        userNameEl.textContent = userData.username || 'User';
+        userEmailEl.textContent = userData.email || '';
 
         // Set avatar if available
-        const avatarImg = document.getElementById('user-avatar-img');
         if (userData.avatarUrl) {
             avatarImg.src = userData.avatarUrl;
         } else {
@@ -51,7 +152,7 @@ const loadUserProfile = async () => {
             const userSongs = await songsResponse.json();
             
             // Update publication count
-            document.getElementById('publication-count').textContent = userSongs.length;
+            publicationCountEl.textContent = userSongs.length;
             
             // Calculate total likes
             let totalLikes = 0;
@@ -60,77 +161,16 @@ const loadUserProfile = async () => {
             });
             
             // Update total likes stat
-            document.getElementById('total-likes').textContent = totalLikes;
+            totalLikesEl.textContent = totalLikes;
             
-            // Update publications section
-            const publicationList = document.querySelector('.publication-list');
-            if (publicationList) {
-                publicationList.innerHTML = '';
-
-                if (!publicationList.dataset.deleteListenerAttached) {
-                    publicationList.addEventListener('publication-delete', async (event) => {
-                        const { songId, title } = event.detail || {};
-                        if (!songId) {
-                            return;
-                        }
-
-                        const confirmed = globalThis.confirm(`Delete "${title}"? This cannot be undone.`);
-                        if (!confirmed) {
-                            return;
-                        }
-
-                        try {
-                            const token = localStorage.getItem('token');
-                            const deleteResponse = await fetch(`/api/songs/${songId}`, {
-                                method: 'DELETE',
-                                headers: {
-                                    'Authorization': `Bearer ${token}`,
-                                },
-                            });
-
-                            if (!deleteResponse.ok) {
-                                const errorData = await deleteResponse.json();
-                                throw new Error(errorData.message || 'Failed to delete song');
-                            }
-
-                            loadUserProfile();
-                        } catch (error) {
-                            console.error('Error deleting song:', error);
-                            alert(error.message || 'Unable to delete song.');
-                        }
-                    });
-
-                    publicationList.dataset.deleteListenerAttached = 'true';
-                }
-                
-                if (userSongs.length === 0) {
-                    publicationList.innerHTML = '<p style="color: #888;">You haven\'t published any music yet.</p>';
-                } else {
-                    userSongs.forEach(song => {
-                        const pubDate = new Date(song.createdAt).toLocaleDateString('en-US');
-                        const songLikes = song.likes ? song.likes.length : 0;
-
-                        const pubItem = document.createElement('publication-item');
-                        pubItem.setAttribute('title', song.title);
-                        pubItem.setAttribute('artist', song.artist);
-                        pubItem.setAttribute('subtitle', `Published: ${pubDate}`);
-                        pubItem.setAttribute('song-id', song.id);
-                        if (song.imageUrl) {
-                            pubItem.setAttribute('image', song.imageUrl);
-                        }
-                        pubItem.setAttribute('stats', `${songLikes} like${songLikes !== 1 ? 's' : ''}`);
-                        pubItem.setAttribute('show-menu', '');
-
-                        publicationList.appendChild(pubItem);
-                    });
-                }
-
-            }
+            renderProfileSongs(publicationList, userSongs);
         }
     } catch (error) {
         console.error('Error loading user profile:', error);
-        document.getElementById('user-name').textContent = 'Error';
-        document.getElementById('user-email').textContent = 'Failed to load profile';
+        const userNameEl = document.getElementById('user-name');
+        const userEmailEl = document.getElementById('user-email');
+        if (userNameEl) userNameEl.textContent = 'Error';
+        if (userEmailEl) userEmailEl.textContent = 'Failed to load profile';
     }
 };
 

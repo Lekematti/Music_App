@@ -18,7 +18,7 @@
     "test:integration": "vitest run backend/tests/**/*.test.js --testPathIgnorePatterns=backend/tests/unit",
     "test:watch": "vitest",
     "frontend": "vite",
-    "backend": "node backend/server.js",
+    "backend": "node backend/index.js",
     "coverage": "vitest run --coverage"
   },
   "devDependencies": {

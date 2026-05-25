@@ -68,3 +68,13 @@
 	margin-right: 12px;
 	flex-shrink: 0;
 }
+
+.search-page .search-page-header {
+	align-items: flex-start;
+}
+
+.search-summary {
+	margin: 6px 0 0;
+	color: #aaa;
+	font-size: 14px;
+}

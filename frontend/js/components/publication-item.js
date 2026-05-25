@@ -7,12 +7,9 @@ class PublicationItemComponent extends HTMLElement {
         const stats = this.getAttribute('stats') || '';
         const showMenu = this.hasAttribute('show-menu');
         
-        const isPagesDir = globalThis.location.pathname.includes('/pages/');
-        const pagesPath = isPagesDir ? './' : './pages/';
-        
         this.innerHTML = `
             <div class="publication-item publication-item-wrap" data-song-id="${songId}">
-                <a href="${pagesPath}song.html?id=${songId}" class="publication-link" style="text-decoration: none; color: inherit; display: flex; flex: 1; min-width: 0;">
+                <a href="/pages/song.html?id=${songId}" class="publication-link" style="text-decoration: none; color: inherit; display: flex; flex: 1; min-width: 0;">
                     ${this.getAttribute('image') ? `<img class="pub-thumb" src="${this.getAttribute('image')}" alt="cover">` : `<div class="pub-icon">🎵</div>`}
                     <div class="pub-info">
                         <h4>${title}</h4>

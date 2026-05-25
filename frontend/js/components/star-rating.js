@@ -1,8 +1,7 @@
 class StarRatingComponent extends HTMLElement {
     connectedCallback() {
-        const score = parseInt(this.getAttribute('score')) || 5;
-        const isPagesDir = globalThis.location.pathname.includes('/pages/');
-        const basePath = isPagesDir ? '../' : './';
+        const score = Number.parseInt(this.getAttribute('score')) || 5;
+        const basePath = '/';
         
         let starsSvg = '';
         for(let i=0; i<score; i++) {
