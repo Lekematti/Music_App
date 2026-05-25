@@ -2,15 +2,20 @@ import { spawnSync } from 'node:child_process';
 import path from 'node:path';
 import { afterAll, beforeAll } from 'vitest';
 import dotenv from 'dotenv';
+import { createRequire } from 'node:module';
 
 dotenv.config();
+
+const require = createRequire(import.meta.url);
+const { ensureEnv, cleanTestData } = require('./_setup.js');
 
 const rootDir = process.cwd();
 const prismaDir = path.join(rootDir, 'backend', 'prisma');
 
 export async function setup() {
   console.log('\n✓ Preparing test database...');
-  
+  ensureEnv();
+
   if (!process.env.DATABASE_URL) {
     throw new Error('DATABASE_URL not set. Cannot run tests.');
   }
@@ -40,42 +45,7 @@ export async function setup() {
 
 export async function teardown() {
   console.log('\n✓ Cleaning up test database...');
-
-  if (!process.env.DATABASE_URL) {
-    return;
-  }
-
-  // Truncate all tables
-  const { default: prisma } = await import('../prisma/prismaClient.js');
-
-  if (!prisma || typeof prisma.$executeRawUnsafe !== 'function') {
-    return;
-  }
-
-  try {
-    // Delete only test data created by tests (email starts with test- and ends with @example.com)
-    await prisma.like.deleteMany({
-      where: {
-        user: { email: { startsWith: 'test-', endsWith: '@example.com' } }
-      }
-    });
-
-    await prisma.song.deleteMany({
-      where: {
-        user: { email: { startsWith: 'test-', endsWith: '@example.com' } }
-      }
-    });
-
-    await prisma.user.deleteMany({
-      where: { email: { startsWith: 'test-', endsWith: '@example.com' } }
-    });
-
-    console.log('✓ Test data user data cleaned (real data untouched).\n');
-  } catch (error) {
-    console.warn('Warning: Failed to truncate database:', error.message);
-  } finally {
-    await prisma.$disconnect();
-  }
+  await cleanTestData();
 }
 
 afterAll(async () => {

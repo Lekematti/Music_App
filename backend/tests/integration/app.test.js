@@ -5,7 +5,7 @@ import { describe, it, expect, vi } from 'vitest';
 import request from 'supertest';
 
 // Mock our own prismaClient
-vi.mock('../prisma/prismaClient', () => {
+vi.mock('../../prisma/prismaClient', () => {
     return {
         default: {},
         user: {},
@@ -13,7 +13,7 @@ vi.mock('../prisma/prismaClient', () => {
     };
 });
 
-import app from '../server';
+import app from '../../server';
 
 describe('Backend API Routes', () => {
   it('GET / should return a welcome message', async () => {

@@ -9,9 +9,22 @@ const router = express.Router();
 
 const supabaseUrl = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-let supabase = supabaseUrl && supabaseServiceKey
-    ? createClient(supabaseUrl, supabaseServiceKey)
-    : null;
+let supabase = null;
+
+const getSupabase = () => {
+    if (supabase) return supabase;
+    if (supabaseUrl && supabaseServiceKey) {
+        // If the URL is the placeholder example (commonly present in env during CI/dev), avoid creating a real client.
+        if (supabaseUrl.includes('example.supabase.co')) return null;
+        try {
+            supabase = createClient(supabaseUrl, supabaseServiceKey);
+        } catch (e) {
+            supabase = null;
+            console.error('Failed to create Supabase client:', e && e.message ? e.message : e);
+        }
+    }
+    return supabase;
+};
 
 // allow tests to inject a mocked supabase client
 router.setSupabaseClient = (client) => {
@@ -44,7 +57,8 @@ router.post('/', protect, upload.fields([
     { name: 'imageFile', maxCount: 1 },
 ]), async (req, res) => {
     try {
-        if (!supabase) {
+        const client = getSupabase();
+        if (!client) {
             return res.status(500).json({ message: 'Supabase storage is not configured' });
         }
 
@@ -80,7 +94,7 @@ router.post('/', protect, upload.fields([
 
         const audioExt = extensionFromMime[audioFile.mimetype] || 'mp3';
         const audioPath = buildPath(user.id, audioExt);
-        const { error: audioError } = await supabase.storage
+        const { error: audioError } = await client.storage
             .from('songs')
             .upload(audioPath, audioFile.buffer, {
                 contentType: audioFile.mimetype,
@@ -95,7 +109,7 @@ router.post('/', protect, upload.fields([
         if (imageFile) {
             const imageExt = extensionFromMime[imageFile.mimetype] || 'jpg';
             const imagePath = buildPath(user.id, imageExt);
-            const { error: imageError } = await supabase.storage
+            const { error: imageError } = await client.storage
                 .from('covers')
                 .upload(imagePath, imageFile.buffer, {
                     contentType: imageFile.mimetype,
@@ -106,7 +120,7 @@ router.post('/', protect, upload.fields([
                 return res.status(502).json({ message: `Image upload failed: ${imageError.message}` });
             }
 
-            imageUrl = supabase.storage.from('covers').getPublicUrl(imagePath).data.publicUrl;
+            imageUrl = client.storage.from('covers').getPublicUrl(imagePath).data.publicUrl;
         }
 
         const newSong = await prisma.song.create({

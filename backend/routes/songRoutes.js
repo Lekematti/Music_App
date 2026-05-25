@@ -7,9 +7,21 @@ const supabaseUrl = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL ||
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_KEY || '';
 const { createClient } = require('@supabase/supabase-js');
 
-let supabase = supabaseUrl && supabaseServiceKey
-    ? createClient(supabaseUrl, supabaseServiceKey)
-    : null;
+let supabase = null;
+const getSupabase = () => {
+    if (supabase) return supabase;
+    if (supabaseUrl && supabaseServiceKey) {
+        // If the URL is the placeholder example (commonly present in env during CI/dev), avoid creating a real client.
+        if (supabaseUrl.includes('example.supabase.co')) return null;
+        try {
+            supabase = createClient(supabaseUrl, supabaseServiceKey);
+        } catch (e) {
+            supabase = null;
+            console.error('Failed to create Supabase client:', e && e.message ? e.message : e);
+        }
+    }
+    return supabase;
+};
 
 // Allow tests to inject a mocked supabase client
 router.setSupabaseClient = (client) => {
@@ -63,9 +75,7 @@ const extractStorageReference = (storedValue, defaultBucket = 'songs') => {
 };
 
 const toSignedPlaybackUrl = async (storedUrl, defaultBucket = 'songs') => {
-    if (!storedUrl || !supabase) {
-        return storedUrl;
-    }
+    if (!storedUrl) return storedUrl;
 
     if (!storedUrl.startsWith('http')) {
         return mediaProxyUrl(defaultBucket, storedUrl);
@@ -269,8 +279,9 @@ router.delete('/:id', protect, async (req, res) => {
         }
 
         const audioReference = extractStorageReference(song.url, 'songs');
-        if (supabase && audioReference) {
-            const { error: removeAudioError } = await supabase.storage
+        const client = getSupabase();
+        if (client && audioReference) {
+            const { error: removeAudioError } = await client.storage
                 .from(audioReference.bucket)
                 .remove([audioReference.path]);
 
@@ -280,8 +291,8 @@ router.delete('/:id', protect, async (req, res) => {
         }
 
         const imageReference = extractStorageReference(song.imageUrl, 'covers');
-        if (supabase && imageReference) {
-            const { error: removeImageError } = await supabase.storage
+        if (client && imageReference) {
+            const { error: removeImageError } = await client.storage
                 .from(imageReference.bucket)
                 .remove([imageReference.path]);
 
