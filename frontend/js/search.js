@@ -57,10 +57,15 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
 
         const songs = await response.json();
+        const plural = songs.length === 1 ? '' : 's';
+        const summary = songs.length
+            ? `Found ${songs.length} result${plural} for “${query}”.`
+            : `No results found for “${query}”.`;
+
         renderSearchResults(
             resultsList,
             songs,
-            songs.length ? `Found ${songs.length} result${songs.length === 1 ? '' : 's'} for “${query}”.` : `No results found for “${query}”.`,
+            summary,
             '<p style="color: #888;">No songs matched your search.</p>'
         );
     } catch (error) {

@@ -82,10 +82,10 @@ const updateSongCover = (song) => {
     }
 };
 
-let lastInitializedSongUrl = '';
+let initializingSongPage = false;
 
 const syncPersistentPlayer = (song) => {
-    const playerComponent = document.querySelector('audio-player-component');
+    const playerComponent = document.getElementById('global-player') || document.querySelector('audio-player-component');
     if (!playerComponent || !song.url) {
         return;
     }
@@ -116,18 +116,19 @@ const initializeSongPage = async () => {
     syncPersistentPlayer(song);
 };
 
-const runSongPageInitialization = () => {
+const runSongPageInitialization = async () => {
     if (!document.getElementById('song-title')) {
         return;
     }
 
-    if (globalThis.location.href === lastInitializedSongUrl) {
-        return;
+    if (initializingSongPage) return;
+
+    initializingSongPage = true;
+    try {
+        await initializeSongPage();
+    } finally {
+        initializingSongPage = false;
     }
-
-    lastInitializedSongUrl = globalThis.location.href;
-
-    initializeSongPage();
 };
 
 document.addEventListener('DOMContentLoaded', runSongPageInitialization);

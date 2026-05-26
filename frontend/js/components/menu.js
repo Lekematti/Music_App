@@ -1,52 +1,88 @@
 // Create a Web Component for the side menu
 class SideMenuComponent extends HTMLElement {
     connectedCallback() {
-        const basePath = '/';
+        this._render();
+        this._attachListeners();
+    }
 
-        // Render HTML inside the component
+    disconnectedCallback() {
+        document.removeEventListener('click', this._handleDocumentClick);
+    }
+
+    _render() {
+        // Derive basePath from the current page location so links work
+        // regardless of whether the app is served from root or a subdirectory
+        const basePath = document.querySelector('base')?.href ?? '/';
+
         this.innerHTML = `
-            <aside id="side-menu" class="side-menu">
+            <aside id="side-menu" class="side-menu" aria-hidden="true" aria-label="Site navigation">
                 <div class="side-menu-header">
                     <h2>Menu</h2>
-                    <button id="close-btn" class="close-btn">X</button>
+                    <button id="close-btn" class="close-btn" aria-label="Close menu">✕</button>
                 </div>
                 <ul class="side-menu-list">
-                    <li><a href="/pages/profile.html"><img src="${basePath}assets/icons/profile.png" alt="Profile" class="menu-icon"> Profile</a></li>
-                    <li><a href="/pages/upload.html"><img src="${basePath}assets/icons/upload.png" alt="Upload" class="menu-icon"> Upload</a></li>
-                    <li><a href="/pages/settings.html"><img src="${basePath}assets/icons/settings.png" alt="Settings" class="menu-icon"> Settings</a></li>
+                    <li><a href="${basePath}pages/profile.html"><img src="${basePath}assets/icons/profile.png" alt="" class="menu-icon"> Profile</a></li>
+                    <li><a href="${basePath}pages/upload.html"><img src="${basePath}assets/icons/upload.png" alt="" class="menu-icon"> Upload</a></li>
+                    <li><a href="${basePath}pages/settings.html"><img src="${basePath}assets/icons/settings.png" alt="" class="menu-icon"> Settings</a></li>
                 </ul>
             </aside>
         `;
+    }
 
+    _attachListeners() {
         const sideMenu = this.querySelector('#side-menu');
         const closeBtn = this.querySelector('#close-btn');
 
-        // Allow opening via global event to avoid race conditions with other components
-        document.addEventListener('click', (e) => {
-            if (e.target.closest('.menu-btn, #menu-btn')) {
-                e.preventDefault();
+        // Bound reference so the same function can be removed in disconnectedCallback
+        this._handleDocumentClick = (e) => {
+            const clickedMenuBtn = e.target.closest('.menu-btn, #menu-btn');
+            const clickedOutside = !e.target.closest('#side-menu') && !clickedMenuBtn;
+
+            if (clickedMenuBtn) {
+                // Do NOT call e.preventDefault() here — it would block any
+                // default behaviour on the trigger button (e.g. a link styled as a button)
                 sideMenu.classList.add('open');
+                sideMenu.setAttribute('aria-hidden', 'false');
+                closeBtn.focus();
+                return;
+            }
+
+            if (clickedOutside && sideMenu.classList.contains('open')) {
+                this._close(sideMenu);
+            }
+        };
+
+        document.addEventListener('click', this._handleDocumentClick);
+
+        closeBtn.addEventListener('click', () => this._close(sideMenu));
+
+        // Close on Escape key for accessibility
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && sideMenu.classList.contains('open')) {
+                this._close(sideMenu);
             }
         });
+    }
 
-        // Close button
-        if (closeBtn) {
-            closeBtn.addEventListener('click', () => {
-                sideMenu.classList.remove('open');
-            });
-        }
+    _close(sideMenu) {
+        sideMenu.classList.remove('open');
+        sideMenu.setAttribute('aria-hidden', 'true');
     }
 }
 
-// Define new HTML element <side-menu-component>
-customElements.define('side-menu-component', SideMenuComponent);
+if (!customElements.get('side-menu-component')) {
+    customElements.define('side-menu-component', SideMenuComponent);
+}
 
-// When the whole page is loaded, add the component automatically to the body element,
-// so there is no need to manually add it to every HTML file!
-document.addEventListener('DOMContentLoaded', () => {
-    // Ensure it hasn't been added already
+// Works whether the script loads before or after DOMContentLoaded
+function appendSideMenu() {
     if (!document.querySelector('side-menu-component')) {
-        const menuElement = document.createElement('side-menu-component');
-        document.body.appendChild(menuElement);
+        document.body.appendChild(document.createElement('side-menu-component'));
     }
-});
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', appendSideMenu);
+} else {
+    appendSideMenu();
+}

@@ -20,4 +20,6 @@ class ListRowItemComponent extends HTMLElement {
         `;
     }
 }
-customElements.define('list-row-item', ListRowItemComponent);
+if (!customElements.get('list-row-item')) {
+    customElements.define('list-row-item', ListRowItemComponent);
+}

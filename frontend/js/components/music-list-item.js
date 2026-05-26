@@ -17,4 +17,6 @@ class MusicListItemComponent extends HTMLElement {
     }
 }
 
-customElements.define('music-list-item', MusicListItemComponent);
+if (!customElements.get('music-list-item')) {
+    customElements.define('music-list-item', MusicListItemComponent);
+}

@@ -19,4 +19,6 @@ class MusicCardComponent extends HTMLElement {
     }
 }
 
-customElements.define('music-card', MusicCardComponent);
+if (!customElements.get('music-card')) {
+    customElements.define('music-card', MusicCardComponent);
+}

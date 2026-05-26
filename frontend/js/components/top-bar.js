@@ -126,4 +126,6 @@ class TopBarComponent extends HTMLElement {
         });
     }
 }
-customElements.define('top-bar-component', TopBarComponent);
+if (!customElements.get('top-bar-component')) {
+    customElements.define('top-bar-component', TopBarComponent);
+}

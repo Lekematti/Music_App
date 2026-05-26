@@ -36,9 +36,12 @@ class AudioPlayerComponent extends HTMLElement {
         }
         const artistMarkup = artist ? `<span style="color:#aaa;font-size:12px;">${artist}</span>` : '';
         const metaMarkup = title || artist ? `<div style="text-align:center;">${titleMarkup}${artistMarkup}</div>` : '';
+        // If we have an already-created objectUrl from a previous load, treat it as a valid source
+        const hasSource = Boolean(src) || Boolean(this.objectUrl);
+
         this.innerHTML = `
             <div class="player-wrapper" style="padding: 10px; background: #0d0e12; border: 1px solid #2a2a2a; border-radius: 8px; margin: 12px 0; text-align: center;">
-                ${src ? `
+                ${hasSource ? `
                     <audio class="player-audio" preload="auto"></audio>
                     <div class="player-meta" style="margin-bottom: 8px; display:flex; flex-direction:column; align-items:center; gap:4px; justify-content:center;">
                         ${metaMarkup}
@@ -118,15 +121,24 @@ class AudioPlayerComponent extends HTMLElement {
             }
         };
 
-        const updateToggleIcon = () => {
-            this.toggleButton.textContent = this.audio.paused ? '▶' : '❚❚';
-            if (this.statusLabel) {
-                this.statusLabel.textContent = this.audio.paused ? 'Paused' : 'Playing';
-            }
-        };
-
         const loadSource = async () => {
             const src = this.getAttribute('src') || '';
+
+            // If we already have an object URL from a previous load, reuse it
+            if (this.objectUrl) {
+                try {
+                    this.audio.src = this.objectUrl;
+                    syncProgress();
+                    updateToggleIcon();
+                    this.dispatchEvent(new CustomEvent('player-source-ready', {
+                        detail: { src: this.getAttribute('src') || '' },
+                        bubbles: true,
+                    }));
+                    return;
+                } catch (e) {
+                    console.warn('Failed to reuse objectUrl, will reload source', e);
+                }
+            }
 
             if (!src) {
                 return;
@@ -160,19 +172,22 @@ class AudioPlayerComponent extends HTMLElement {
             }
         };
 
-        // image handling removed from player — song card displays the cover
+        const updateToggleIcon = () => {
+            if (!this.audio || !this.toggleButton) return;
+            this.toggleButton.textContent = this.audio.paused ? '▶' : '⏸';
+        };
 
-        this.audio.addEventListener('loadedmetadata', syncProgress);
         this.audio.addEventListener('timeupdate', syncProgress);
+        this.audio.addEventListener('loadedmetadata', () => {
+            syncProgress();
+            updateToggleIcon();
+        });
+        this.audio.addEventListener('ended', () => {
+            if (this.statusLabel) this.statusLabel.textContent = 'Finished';
+            updateToggleIcon();
+        });
         this.audio.addEventListener('play', updateToggleIcon);
         this.audio.addEventListener('pause', updateToggleIcon);
-        this.audio.addEventListener('ended', () => {
-            syncProgress();
-            this.toggleButton.textContent = '▶';
-            if (this.statusLabel) {
-                this.statusLabel.textContent = 'Finished';
-            }
-        });
 
         this.toggleButton.addEventListener('click', async () => {
             if (this.audio.paused) {
@@ -262,4 +277,6 @@ class AudioPlayerComponent extends HTMLElement {
     }
 }
 
-customElements.define('audio-player-component', AudioPlayerComponent);
+if (!customElements.get('audio-player-component')) {
+    customElements.define('audio-player-component', AudioPlayerComponent);
+}

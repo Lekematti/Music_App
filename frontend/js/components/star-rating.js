@@ -11,4 +11,6 @@ class StarRatingComponent extends HTMLElement {
         this.innerHTML = `<div class="stars">${starsSvg}</div>`;
     }
 }
-customElements.define('star-rating', StarRatingComponent);
+if (!customElements.get('star-rating')) {
+    customElements.define('star-rating', StarRatingComponent);
+}

@@ -75,4 +75,6 @@ class PublicationItemComponent extends HTMLElement {
         }
     }
 }
-customElements.define('publication-item', PublicationItemComponent);
+if (!customElements.get('publication-item')) {
+    customElements.define('publication-item', PublicationItemComponent);
+}

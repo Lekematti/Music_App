@@ -46,4 +46,6 @@ class PasswordInput extends HTMLElement {
     }
 }
 
-customElements.define('password-input', PasswordInput);
+if (!customElements.get('password-input')) {
+    customElements.define('password-input', PasswordInput);
+}
