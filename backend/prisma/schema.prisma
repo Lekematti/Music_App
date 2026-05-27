@@ -9,7 +9,6 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
 }
 
 model User {
@@ -20,7 +19,7 @@ model User {
   avatarUrl String?
   createdAt DateTime @default(now())
   songs     Song[]
-  likes     Like[]
+  ratings   Rating[]
 }
 
 model Song {
@@ -34,12 +33,13 @@ model Song {
   userId    String
   user      User     @relation(fields: [userId], references: [id])
   
-  likes     Like[]
+  ratings   Rating[]
 }
 
-model Like {
+model Rating {
   id        String   @id @default(uuid())
   createdAt DateTime @default(now())
+  score     Int
 
   userId    String
   user      User     @relation(fields: [userId], references: [id])

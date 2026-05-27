@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', async () => {
+const initTop10 = async () => {
     const listContainer = document.getElementById('top10-list');
 
     if (!listContainer) {
@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     try {
         // Fetch top 10 liked songs from backend
-        const response = await fetch('/api/songs/top/liked?limit=10');
+        const response = await fetch('/api/songs/top/rated?limit=10');
         
         if (response.ok) {
             const songs = await response.json();
@@ -26,6 +26,15 @@ document.addEventListener('DOMContentLoaded', async () => {
                 item.setAttribute('rank', `${index + 1}.`);
                 item.setAttribute('title', song.title);
                 item.setAttribute('artist', song.artist);
+                let avgScore = song.averageRating;
+                if (avgScore == null) {
+                    if (song.ratings?.length) {
+                        avgScore = song.ratings.reduce((a, r) => a + r.score, 0) / song.ratings.length;
+                    } else {
+                        avgScore = 0;
+                    }
+                }
+                item.setAttribute('score', avgScore.toFixed(1));
                 if (song.imageUrl) item.setAttribute('image', song.imageUrl);
                 
                 listContainer.appendChild(item);
@@ -38,4 +47,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         console.error('Error fetching songs:', error);
         listContainer.innerHTML = '<p style="color: red;">Cannot connect to the server.</p>';
     }
-});
+};
+
+document.addEventListener('DOMContentLoaded', initTop10);
+document.addEventListener('router:contentLoaded', initTop10);
+

@@ -174,7 +174,7 @@ class AudioPlayerComponent extends HTMLElement {
 
         const updateToggleIcon = () => {
             if (!this.audio || !this.toggleButton) return;
-            this.toggleButton.textContent = this.audio.paused ? '▶' : '⏸';
+            this.toggleButton.textContent = this.audio.paused ? '▶' : '❚❚';
         };
 
         this.audio.addEventListener('timeupdate', syncProgress);
@@ -186,8 +186,15 @@ class AudioPlayerComponent extends HTMLElement {
             if (this.statusLabel) this.statusLabel.textContent = 'Finished';
             updateToggleIcon();
         });
-        this.audio.addEventListener('play', updateToggleIcon);
-        this.audio.addEventListener('pause', updateToggleIcon);
+         this.audio.addEventListener('play', () => {
+            updateToggleIcon();
+            if (this.statusLabel) this.statusLabel.textContent = 'Playing';
+        });
+
+        this.audio.addEventListener('pause', () => {
+            updateToggleIcon();
+            if (this.statusLabel) this.statusLabel.textContent = 'Paused';
+        });
 
         this.toggleButton.addEventListener('click', async () => {
             if (this.audio.paused) {

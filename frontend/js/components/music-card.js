@@ -4,6 +4,7 @@ class MusicCardComponent extends HTMLElement {
         const artist = this.getAttribute('artist') || 'Artist';
         const songId = this.getAttribute('song-id') || '1';
         const image = this.getAttribute('image') || '';
+        const score = this.getAttribute('score') || '0';
         
         const hasCoverClass = image ? ' has-cover' : '';
         this.innerHTML = `
@@ -13,7 +14,7 @@ class MusicCardComponent extends HTMLElement {
                   <h3>${title}</h3>
                   <p>${artist}</p>
                 </div>
-                <star-rating score="5"></star-rating>
+                <star-rating score="${score}"></star-rating>
             </a>
         `;
     }

@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', async () => {
+const initNewUploads = () => {
     const listContainer = document.getElementById('new-uploads-list');
     if (!listContainer) {
         return;
@@ -37,6 +37,10 @@ document.addEventListener('DOMContentLoaded', async () => {
                     item.setAttribute('rank', `${rankNumber}.`);
                     item.setAttribute('title', song.title);
                     item.setAttribute('artist', song.artist);
+                    const avgScore = song.averageRating != null 
+                        ? song.averageRating 
+                        : (song.ratings?.length ? song.ratings.reduce((a, r) => a + r.score, 0) / song.ratings.length : 0);
+                    item.setAttribute('score', avgScore.toFixed(1));
                     if (song.imageUrl) item.setAttribute('image', song.imageUrl);
                     
                     listContainer.appendChild(item);
@@ -97,4 +101,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Load first page on page load
     loadSongs(1);
-});
+};
+
+document.addEventListener('DOMContentLoaded', initNewUploads);
+document.addEventListener('router:contentLoaded', initNewUploads);

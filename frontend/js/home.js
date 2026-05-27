@@ -42,6 +42,12 @@ const createSongElement = (tagName, song) => {
     element.setAttribute('song-id', String(song.id));
     element.setAttribute('title', song.title);
     element.setAttribute('artist', song.artist);
+    
+    // Compute average rating either from injected property or raw ratings array
+    const ratingsAverage = song.ratings?.length ? song.ratings.reduce((a, r) => a + r.score, 0) / song.ratings.length : 0;
+    const avgScore = song.averageRating == null ? ratingsAverage : song.averageRating;
+    element.setAttribute('score', avgScore.toFixed(1));
+    
     // keep native tooltip
     element.title = song.title;
 
@@ -137,7 +143,7 @@ const loadNewUploads = async (newUploadsList) => {
 
 const loadTopSongs = async (top10List) => {
     try {
-        const topResponse = await fetch('/api/songs/top/liked?limit=5');
+        const topResponse = await fetch('/api/songs/top/rated?limit=5');
 
         if (!topResponse.ok) {
             return;
@@ -174,7 +180,7 @@ const loadPastUploads = async (pastUploadsList) => {
     }
 };
 
-document.addEventListener('DOMContentLoaded', async () => {
+const initHome = async () => {
     const newUploadsList = document.getElementById('new-uploads-list');
     const top10List = document.getElementById('top10-widget');
     const pastUploadsList = document.getElementById('past-uploads-widget');
@@ -208,6 +214,9 @@ document.addEventListener('DOMContentLoaded', async () => {
             // allow normal navigation with modifier keys
             if (ev.defaultPrevented || ev.ctrlKey || ev.metaKey || ev.shiftKey) return;
 
+            // Notice we intentionally DO NOT prevent default if they clicked the rating stars or specific elements
+            if (ev.target?.closest('.music-card-rating')) return;
+
             ev.preventDefault();
 
             const songId = el.getAttribute('song-id');
@@ -237,4 +246,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     attachPlayHandler(newUploadsList);
     attachPlayHandler(top10List);
     attachPlayHandler(pastUploadsList);
-});
+};
+
+document.addEventListener('DOMContentLoaded', initHome);
+document.addEventListener('router:contentLoaded', initHome);

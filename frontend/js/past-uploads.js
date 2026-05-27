@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', async () => {
+const initPastUploads = async () => {
     const listContainer = document.getElementById('past-uploads-list');
     if (!listContainer) {
         return;
@@ -43,7 +43,10 @@ document.addEventListener('DOMContentLoaded', async () => {
                 item.setAttribute('rank', `${index + 1}.`);
                 item.setAttribute('title', song.title);
                 item.setAttribute('artist', song.artist);
-                item.setAttribute('score', song.likes ? song.likes.length : 0);
+                const avgScore = song.averageRating != null 
+                    ? song.averageRating 
+                    : (song.ratings?.length ? song.ratings.reduce((a, r) => a + r.score, 0) / song.ratings.length : 0);
+                item.setAttribute('score', avgScore.toFixed(1));
                 if (song.imageUrl) item.setAttribute('image', song.imageUrl);
 
                 listContainer.appendChild(item);
@@ -56,4 +59,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         console.error('Error fetching songs:', error);
         listContainer.innerHTML = '<p style="color: red;">Cannot connect to the server.</p>';
     }
-});
+};
+
+document.addEventListener('DOMContentLoaded', initPastUploads);
+document.addEventListener('router:contentLoaded', initPastUploads);

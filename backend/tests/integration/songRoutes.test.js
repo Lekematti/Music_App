@@ -41,10 +41,25 @@ describe('Song APIs', () => {
                 app = require('../../server');
         });
 
-    afterEach(async () => {
-        // cleanup created songs/users
-        await prisma.song.deleteMany({ where: { user: { email: { contains: 'test-' } } } }).catch(() => {});
-        await prisma.user.deleteMany({ where: { email: { contains: 'test-' } } }).catch(() => {});
+     afterEach(async () => {   // ← replace this whole block
+        try {
+            await prisma.rating.deleteMany({
+                where: {
+                    OR: [
+                        { user: { email: { contains: 'test-' } } },
+                        { song: { user: { email: { contains: 'test-' } } } }
+                    ]
+                }
+            });
+            await prisma.song.deleteMany({
+                where: { user: { email: { contains: 'test-' } } }
+            });
+            await prisma.user.deleteMany({
+                where: { email: { contains: 'test-' } }
+            });
+        } catch (e) {
+            console.error('Test cleanup failed:', e);
+        }
     });
 
     it('GET /api/songs returns array', async () => {
@@ -189,7 +204,7 @@ describe('Song APIs', () => {
         expect(found.url).toBe(fullMediaUrl);
     });
 
-    it('GET /api/songs/top/liked returns songs ordered by likes', async () => {
+    it('GET /api/songs/top/rated returns songs ordered by ratings', async () => {
         // create user and songs
         const u = uniqueUser();
         await request(app).post('/api/auth/register').send(u);
@@ -197,23 +212,22 @@ describe('Song APIs', () => {
 
         const s1 = await prisma.song.create({ data: { title: 'One', artist: 'A', url: '1.mp3', userId: user.id } });
         const s2 = await prisma.song.create({ data: { title: 'Two', artist: 'A', url: '2.mp3', userId: user.id } });
-        // create two other users to like songs so counts are deterministic
-        const liker1 = uniqueUser();
-        const liker2 = uniqueUser();
-        await request(app).post('/api/auth/register').send(liker1);
-        await request(app).post('/api/auth/register').send(liker2);
-        const likerRecord1 = await prisma.user.findUnique({ where: { email: liker1.email } });
-        const likerRecord2 = await prisma.user.findUnique({ where: { email: liker2.email } });
-        // add likes: s2 gets two likes, s1 gets one
-        await prisma.like.create({ data: { userId: likerRecord1.id, songId: s2.id } });
-        await prisma.like.create({ data: { userId: likerRecord1.id, songId: s1.id } }).catch(() => {});
-        await prisma.like.create({ data: { userId: likerRecord2.id, songId: s2.id } }).catch(() => {});
+        // create two other users to rate songs so counts are deterministic
+        const rater1 = uniqueUser();
+        const rater2 = uniqueUser();
+        await request(app).post('/api/auth/register').send(rater1);
+        await request(app).post('/api/auth/register').send(rater2);
+        const raterRecord1 = await prisma.user.findUnique({ where: { email: rater1.email } });
+        const raterRecord2 = await prisma.user.findUnique({ where: { email: rater2.email } });
+        // add ratings: s2 gets two ratings, s1 gets one
+        await prisma.rating.create({ data: { userId: raterRecord1.id, songId: s2.id, score: 5 } });
+        await prisma.rating.create({ data: { userId: raterRecord1.id, songId: s1.id, score: 4 } }).catch(() => {});
+        await prisma.rating.create({ data: { userId: raterRecord2.id, songId: s2.id, score: 5 } }).catch(() => {});
 
-        const res = await request(app).get('/api/songs/top/liked?limit=2');
+        const res = await request(app).get(`/api/songs/top/rated?limit=2&userId=${user.id}`);
         expect(res.status).toBe(200);
         expect(Array.isArray(res.body)).toBe(true);
         expect(res.body.length).toBeGreaterThanOrEqual(2);
-        // top result should be s2 (more likes)
         expect(res.body[0].id).toBe(s2.id);
     });
 

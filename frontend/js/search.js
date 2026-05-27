@@ -4,6 +4,10 @@ const createResultItem = (song, index) => {
     item.setAttribute('title', song.title);
     item.setAttribute('artist', song.artist);
     item.setAttribute('rank', `${index + 1}.`);
+    const avgScore = song.averageRating != null 
+        ? song.averageRating 
+        : (song.ratings?.length ? song.ratings.reduce((a, r) => a + r.score, 0) / song.ratings.length : 0);
+    item.setAttribute('score', avgScore.toFixed(1));
 
     if (song.imageUrl) {
         item.setAttribute('image', song.imageUrl);
@@ -34,7 +38,7 @@ const renderSearchResults = (container, songs, summary, emptyMessage) => {
 
 const getSearchQuery = () => new URLSearchParams(globalThis.location.search).get('q')?.trim() || '';
 
-document.addEventListener('DOMContentLoaded', async () => {
+const initSearch = async () => {
     const resultsList = document.getElementById('search-results');
     const query = getSearchQuery();
 
@@ -72,4 +76,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         console.error('Error fetching search results:', error);
         renderSearchResults(resultsList, [], `Search failed for “${query}”.`, '<p style="color: red;">Cannot connect to the server.</p>');
     }
-});
+};
+
+document.addEventListener('DOMContentLoaded', initSearch);
+document.addEventListener('router:contentLoaded', initSearch);

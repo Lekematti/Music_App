@@ -7,7 +7,8 @@
   "type": "commonjs",
   "main": "frontend/index.html",
   "prisma": {
-    "schema": "backend/prisma/schema.prisma"
+    "schema": "backend/prisma/schema.prisma",
+    "config": "backend/prisma/prisma.config.ts"
   },
   "scripts": {
     "dev": "concurrently \"npm run frontend\" \"npm run backend\"",
@@ -20,6 +21,7 @@
     "frontend": "vite",
     "backend": "node backend/index.js",
     "coverage": "vitest run --coverage"
+    
   },
   "devDependencies": {
     "@types/node": "25.7.0",

@@ -213,7 +213,7 @@ router.get('/', async (req, res) => {
                         avatarUrl: true
                     }
                 },
-                likes: true
+                ratings: true
             }
         });
 
@@ -236,42 +236,119 @@ router.get('/', async (req, res) => {
     }
 });
 
-// @desc    Get top liked songs
-// @route   GET /api/songs/top/liked
+// @desc    Get top rated songs
+// @route   GET /api/songs/top/rated
 // @access  Public
-router.get('/top/liked', async (req, res) => {
+router.get('/top/rated', async (req, res) => {
     try {
         const limit = Number.parseInt(req.query.limit) || 10;
+        const userId = req.query.userId;
 
-        // Fetch songs with like count, sorted by most likes
         const songs = await prisma.song.findMany({
+            where: userId ? { userId } : {},
             include: {
-                user: {
-                    select: {
-                        username: true,
-                        avatarUrl: true
-                    }
-                },
-                likes: true
-            },
-            orderBy: {
-                likes: {
-                    _count: 'desc'
-                }
-            },
-            take: limit
+                user: { select: { username: true, avatarUrl: true } },
+                ratings: true
+            }
         });
 
-        // Add like count to each song
-        const songsWithLikeCount = songs.map(song => ({
-            ...song,
-            likeCount: song.likes.length
-        }));
+        const songsWithRating = songs.map(song => {
+            const totalScore = song.ratings.reduce((acc, r) => acc + r.score, 0);
+            return {
+                ...song,
+                averageRating: song.ratings.length > 0 ? totalScore / song.ratings.length : 0,
+                ratingCount: song.ratings.length
+            };
+        });
 
-        res.json(await attachPlayableUrls(songsWithLikeCount));
+        songsWithRating.sort((a, b) =>
+            b.ratingCount - a.ratingCount || b.averageRating - a.averageRating
+        );
+
+        res.json(await attachPlayableUrls(songsWithRating.slice(0, limit)));
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Server error while fetching top songs' });
+    }
+});
+
+// @desc    Rate a song
+// @route   POST /api/songs/:id/rate
+// @access  Private
+router.post('/:id/rate', protect, async (req, res) => {
+    try {
+        const songId = req.params.id;
+        const { score } = req.body;
+        
+        if (typeof score !== 'number' || score < 1 || score > 5) {
+            return res.status(400).json({ message: 'Score must be a number between 1 and 5' });
+        }
+
+        const user = await prisma.user.findUnique({ where: { email: req.user.email } });
+        if (!user) return res.status(404).json({ message: 'User not found' });
+
+        const song = await prisma.song.findUnique({ where: { id: songId } });
+        if (!song) return res.status(404).json({ message: 'Song not found' });
+
+        const rating = await prisma.rating.upsert({
+            where: {
+                userId_songId: {
+                    userId: user.id,
+                    songId: songId
+                }
+            },
+            update: {
+                score: score
+            },
+            create: {
+                userId: user.id,
+                songId: songId,
+                score: score
+            }
+        });
+
+        res.status(200).json(rating);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server error while rating song' });
+    }
+});
+
+// @desc    Delete rating from a song
+// @route   DELETE /api/songs/:id/rate
+// @access  Private
+router.delete('/:id/rate', protect, async (req, res) => {
+    try {
+        const songId = req.params.id;
+        const user = await prisma.user.findUnique({ where: { email: req.user.email } });
+        if (!user) return res.status(404).json({ message: 'User not found' });
+
+        const existingRating = await prisma.rating.findUnique({
+            where: {
+                userId_songId: {
+                    userId: user.id,
+                    songId: songId
+                }
+            }
+        });
+
+        if (!existingRating) {
+            return res.status(400).json({ message: 'Song not rated' });
+        }
+
+        await prisma.rating.delete({
+            where: {
+                userId_songId: {
+                    userId: user.id,
+                    songId: songId
+                }
+            }
+        });
+
+        res.json({ message: 'Rating removed' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server error while removing rating' });
     }
 });
 
@@ -289,7 +366,7 @@ router.get('/:id', async (req, res) => {
                         avatarUrl: true
                     }
                 },
-                likes: true
+                ratings: true
             }
         });
 
@@ -352,7 +429,7 @@ router.delete('/:id', protect, async (req, res) => {
             }
         }
 
-        await prisma.like.deleteMany({
+        await prisma.rating.deleteMany({
             where: { songId: song.id },
         });
 

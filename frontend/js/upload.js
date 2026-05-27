@@ -1,8 +1,9 @@
-document.addEventListener("DOMContentLoaded", () => {
+const initUpload = () => {
     const uploadForm = document.getElementById('upload-form');
-    if (!uploadForm) {
+    if (!uploadForm || uploadForm.hasAttribute('data-initialized')) {
         return;
     }
+    uploadForm.setAttribute('data-initialized', 'true');
 
     uploadForm.addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -69,4 +70,7 @@ document.addEventListener("DOMContentLoaded", () => {
             submitBtn.textContent = 'Upload';
         }
     });
-});
+};
+
+document.addEventListener("DOMContentLoaded", initUpload);
+document.addEventListener("router:contentLoaded", initUpload);
