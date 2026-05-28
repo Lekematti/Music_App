@@ -66,10 +66,13 @@
 	align-items: center;
 	padding: 15px 0;
 	border-bottom: 1px solid #2a2a2a;
+	overflow: hidden; /* prevent children (stars) from overflowing card boundary */
 }
 .publication-item-wrap {
 	position: relative;
 	gap: 12px;
+	display: flex;
+	align-items: center;
 }
 .publication-item:last-child {
 	border-bottom: none;
@@ -96,6 +99,7 @@
 }
 .pub-info {
 	flex: 1;
+	min-width: 0; /* allow truncation inside flex */
 }
 .pub-info h4 {
 	margin: 0 0 5px 0;
@@ -111,6 +115,15 @@
 	margin-right: 20px;
 	display: flex;
 	gap: 2px;
+	flex-shrink: 0; /* keep stars from shrinking and overlapping other content */
+}
+
+.pub-stats {
+	flex-shrink: 0; /* keep stats block fixed and avoid pushing into thumbnail */
+	max-width: 160px;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
 }
 .pub-actions {
 	position: relative;

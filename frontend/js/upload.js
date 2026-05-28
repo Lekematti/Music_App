@@ -1,9 +1,9 @@
 const initUpload = () => {
     const uploadForm = document.getElementById('upload-form');
-    if (!uploadForm || uploadForm.hasAttribute('data-initialized')) {
+    if (!uploadForm || uploadForm.dataset.initialized) {
         return;
     }
-    uploadForm.setAttribute('data-initialized', 'true');
+    uploadForm.dataset.initialized = 'true';
 
     uploadForm.addEventListener('submit', async (e) => {
         e.preventDefault();

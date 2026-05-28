@@ -7,6 +7,8 @@
 	display: flex;
 	flex-direction: column;
 	border: 1px solid #2a2a2a;
+	box-sizing: border-box;
+	overflow: hidden; /* prevent children (stars/covers) from overflowing the card */
 }
 
 .card-icon {
@@ -40,7 +42,8 @@
 }
 
 .card .card-body {
-    flex: none;
+	flex: none;
+	min-width: 0; /* allow text to truncate instead of forcing siblings out */
 }
 
 @media (min-width: 900px) {
@@ -52,20 +55,21 @@
 /* Constrain cards that appear in horizontal scrollers (Top 10, New uploads)
    so they remain compact and their covers keep a square aspect */
 .horizontal-list .card {
-	width: 180px;
+	width: 250px;
 	flex: 0 0 auto;
 }
 
 .horizontal-list .card .card-cover {
-	width: 100%;
-	max-width: 160px; /* constrain top10 cover width */
-	min-width: 80px;
-	aspect-ratio: 1 / 1;
-	height: auto;
-	object-fit: contain; /* show the whole image inside the card for Top 10 */
-	padding: 4px;
+	width: 200px;
+	height: 200px; /* fixed square size for uniform Top 10 visuals */
+	max-width: 200px;
+	min-width: 200px;
+	object-fit: contain; /* keep the full image visible inside the square */
+	background: #222328; /* letterbox area blends with the card */
+	padding: 8px; /* keep the image from touching the border */
 	box-sizing: border-box;
 	margin: 0 auto;
+	border-radius: 6px;
 }
 
 /* Song page: constrain the large card cover so it doesn't grow too big or too small */
@@ -135,6 +139,7 @@
 	border-radius: 8px;
 	min-width: 220px;
 	border: 1px solid #2a2a2a;
+	overflow: hidden; /* clip stars or long text from sticking out */
 }
 
 .item-icon {
@@ -159,3 +164,7 @@
 	font-size: 12px;
 	color: #aaa;
 }
+
+.list-item .item-info { min-width: 0; }
+.list-item .stars { flex-shrink: 0; }
+.card .stars { flex-shrink: 0; }

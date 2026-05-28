@@ -4,9 +4,15 @@ const createResultItem = (song, index) => {
     item.setAttribute('title', song.title);
     item.setAttribute('artist', song.artist);
     item.setAttribute('rank', `${index + 1}.`);
-    const avgScore = song.averageRating != null 
-        ? song.averageRating 
-        : (song.ratings?.length ? song.ratings.reduce((a, r) => a + r.score, 0) / song.ratings.length : 0);
+    let avgScore;
+
+    if (song.averageRating != null) {
+        avgScore = song.averageRating;
+    } else if (song.ratings?.length) {
+        avgScore = song.ratings.reduce((a, r) => a + r.score, 0) / song.ratings.length;
+    } else {
+        avgScore = 0;
+    }
     item.setAttribute('score', avgScore.toFixed(1));
 
     if (song.imageUrl) {

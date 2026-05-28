@@ -43,9 +43,15 @@ const initPastUploads = async () => {
                 item.setAttribute('rank', `${index + 1}.`);
                 item.setAttribute('title', song.title);
                 item.setAttribute('artist', song.artist);
-                const avgScore = song.averageRating != null 
-                    ? song.averageRating 
-                    : (song.ratings?.length ? song.ratings.reduce((a, r) => a + r.score, 0) / song.ratings.length : 0);
+                // determine average score: prefer explicit averageRating, otherwise compute from ratings array
+                let avgScore;
+                if (song.averageRating !== null && song.averageRating !== undefined) {
+                    avgScore = song.averageRating;
+                } else if (song.ratings?.length > 0) {
+                    avgScore = song.ratings.reduce((a, r) => a + r.score, 0) / song.ratings.length;
+                } else {
+                    avgScore = 0;
+                }
                 item.setAttribute('score', avgScore.toFixed(1));
                 if (song.imageUrl) item.setAttribute('image', song.imageUrl);
 

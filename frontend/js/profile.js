@@ -20,6 +20,13 @@ const getProfileElements = () => {
     };
 };
 
+// API base: when running frontend via Vite dev server (port 5173),
+// send requests to backend on localhost:5000. In production the backend
+// serves the frontend so use relative paths.
+const API_BASE = (globalThis.location.hostname === 'localhost' && globalThis.location.port === '5173')
+    ? 'http://localhost:5000'
+    : '';
+
 const renderProfileSongs = (publicationList, userSongs) => {
     publicationList.innerHTML = '';
 
@@ -37,7 +44,7 @@ const renderProfileSongs = (publicationList, userSongs) => {
 
             try {
                 const token = localStorage.getItem('token');
-                const deleteResponse = await fetch(`/api/songs/${songId}`, {
+                const deleteResponse = await fetch(`${API_BASE}/api/songs/${songId}`, {
                     method: 'DELETE',
                     headers: {
                         'Authorization': `Bearer ${token}`,
@@ -131,7 +138,7 @@ const updateAvgRatingLabel = () => {
 };
 
 const fetchCurrentUser = async (token) => {
-    const userResponse = await fetch('/api/auth/me', {
+    const userResponse = await fetch(`${API_BASE}/api/auth/me`, {
         headers: {
             'Authorization': `Bearer ${token}`
         }
@@ -183,7 +190,7 @@ const loadUserProfile = async () => {
         userEmailEl.textContent = userData.email || '';
         setUserAvatar(avatarImg, userData.avatarUrl);
 
-        const songsResponse = await fetch(`/api/songs?userId=${userData.id}`);
+        const songsResponse = await fetch(`${API_BASE}/api/songs?userId=${userData.id}`);
         
         if (songsResponse.ok) {
             const userSongs = await songsResponse.json();
@@ -244,6 +251,108 @@ const initProfilePage = () => {
             if (targetEl) targetEl.style.display = 'block';
         });
     });
+
+    // Profile update forms
+    const passwordForm = document.querySelector('#password-section form');
+    const usernameForm = document.querySelector('#username-section form');
+    const emailForm = document.querySelector('#email-section form');
+
+    if (passwordForm && !passwordForm.dataset.listenerAttached) {
+        passwordForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const current = document.getElementById('current-password')?.value || '';
+            const next = document.getElementById('new-password')?.value || '';
+            if (!current || !next) return alert('Please fill both password fields.');
+            try {
+                const token = localStorage.getItem('token');
+                const resp = await fetch(`${API_BASE}/api/auth/me/password`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ currentPassword: current, newPassword: next })
+                });
+
+                const data = await resp.json();
+                if (!resp.ok) throw new Error(data.message || 'Failed to update password');
+
+                alert('Password updated successfully');
+                // Clear inputs
+                document.getElementById('current-password').value = '';
+                document.getElementById('new-password').value = '';
+            } catch (err) {
+                console.error('Password update error:', err);
+                alert(err.message || 'Unable to update password');
+            }
+        });
+        passwordForm.dataset.listenerAttached = 'true';
+    }
+
+    if (usernameForm && !usernameForm.dataset.listenerAttached) {
+        usernameForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const newUsername = document.getElementById('new-username')?.value || '';
+            if (!newUsername) return alert('Enter a username');
+            try {
+                const token = localStorage.getItem('token');
+                const resp = await fetch(`${API_BASE}/api/auth/me`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ username: newUsername })
+                });
+
+                const data = await resp.json();
+                if (!resp.ok) throw new Error(data.message || 'Failed to update username');
+
+                // Update displayed username and refresh token
+                const userNameEl = document.getElementById('user-name');
+                if (userNameEl) userNameEl.textContent = data.username || newUsername;
+                if (data.token) localStorage.setItem('token', data.token);
+
+                alert('Username updated');
+            } catch (err) {
+                console.error('Username update error:', err);
+                alert(err.message || 'Unable to update username');
+            }
+        });
+        usernameForm.dataset.listenerAttached = 'true';
+    }
+
+    if (emailForm && !emailForm.dataset.listenerAttached) {
+        emailForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const newEmail = document.getElementById('new-email')?.value || '';
+            if (!newEmail) return alert('Enter an email');
+            try {
+                const token = localStorage.getItem('token');
+                const resp = await fetch(`${API_BASE}/api/auth/me`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ email: newEmail })
+                });
+
+                const data = await resp.json();
+                if (!resp.ok) throw new Error(data.message || 'Failed to update email');
+
+                const userEmailEl = document.getElementById('user-email');
+                if (userEmailEl) userEmailEl.textContent = data.email || newEmail;
+                if (data.token) localStorage.setItem('token', data.token);
+
+                alert('Email updated');
+            } catch (err) {
+                console.error('Email update error:', err);
+                alert(err.message || 'Unable to update email');
+            }
+        });
+        emailForm.dataset.listenerAttached = 'true';
+    }
 };
 
 document.addEventListener('DOMContentLoaded', initProfilePage);

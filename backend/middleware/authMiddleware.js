@@ -15,15 +15,15 @@ const protect = (req, res, next) => {
             // Add decoded username (or ID) to request objects
             req.user = decoded;
 
-            next();
+            return next();
         } catch (error) {
             console.error(error);
-            res.status(401).json({ message: 'Not authorized, invalid token' });
+            return res.status(401).json({ message: 'Not authorized, invalid token' });
         }
     }
 
     if (!token) {
-        res.status(401).json({ message: 'Not authorized, token missing' });
+        return res.status(401).json({ message: 'Not authorized, token missing' });
     }
 };
 

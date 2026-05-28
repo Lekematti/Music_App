@@ -143,7 +143,7 @@ const loadNewUploads = async (newUploadsList) => {
 
 const loadTopSongs = async (top10List) => {
     try {
-        const topResponse = await fetch('/api/songs/top/rated?limit=5');
+        const topResponse = await fetch('/api/songs/top/rated?limit=10');
 
         if (!topResponse.ok) {
             return;

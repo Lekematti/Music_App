@@ -147,4 +147,95 @@ router.get('/me', protect, async (req, res) => {
     }
 });
 
+// @desc    Update logged in user's username or email
+// @route   PUT /api/auth/me
+// @access  Private
+router.put('/me', protect, async (req, res) => {
+    try {
+        const { username, email } = req.body || {};
+        if (!username && !email) {
+            return res.status(400).json({ message: 'Nothing to update' });
+        }
+
+        const updates = {};
+        if (typeof username === 'string') {
+            const trimmed = username.trim();
+            if (trimmed.length < 3) return res.status(400).json({ message: 'Username must be at least 3 characters long' });
+            updates.username = trimmed;
+        }
+
+        if (typeof email === 'string') {
+            const normalized = normalizeEmail(email);
+            if (!isValidEmail(normalized)) return res.status(400).json({ message: 'Please enter a valid email address' });
+            updates.email = normalized;
+        }
+
+        // Ensure uniqueness if changing username or email
+        if (updates.username || updates.email) {
+            const conflict = await prisma.user.findFirst({
+                where: {
+                    OR: [
+                        updates.email ? { email: updates.email } : undefined,
+                        updates.username ? { username: updates.username } : undefined,
+                    ].filter(Boolean),
+                    NOT: { id: req.user.id }
+                }
+            });
+
+            if (conflict) {
+                return res.status(400).json({ message: 'Username or email already in use' });
+            }
+        }
+
+        const updated = await prisma.user.update({
+            where: { id: req.user.id },
+            data: updates,
+        });
+
+        // Return updated user and refreshed token (in case email changed)
+        res.json({
+            id: updated.id,
+            username: updated.username,
+            email: updated.email,
+            avatarUrl: updated.avatarUrl,
+            token: generateToken(updated.id, updated.email),
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server error during update' });
+    }
+});
+
+// @desc    Update logged in user's password
+// @route   PUT /api/auth/me/password
+// @access  Private
+router.put('/me/password', protect, async (req, res) => {
+    try {
+        const { currentPassword, newPassword } = req.body || {};
+        console.log('Password update request for user:', req.user);
+        console.log('Request body keys:', Object.keys(req.body || {}));
+        if (typeof currentPassword !== 'string' || typeof newPassword !== 'string') {
+            return res.status(400).json({ message: 'Please provide current and new passwords' });
+        }
+
+        if (newPassword.length < 6) return res.status(400).json({ message: 'New password must be at least 6 characters long' });
+
+        const user = await prisma.user.findUnique({ where: { id: req.user.id } });
+        if (!user) return res.status(404).json({ message: 'User not found' });
+
+        const match = await bcrypt.compare(currentPassword, user.password);
+        if (!match) return res.status(400).json({ message: 'Current password is incorrect' });
+
+        const salt = await bcrypt.genSalt(10);
+        const hashed = await bcrypt.hash(newPassword, salt);
+
+        await prisma.user.update({ where: { id: req.user.id }, data: { password: hashed } });
+
+        res.json({ message: 'Password updated successfully' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server error updating password' });
+    }
+});
+
 module.exports = router;
