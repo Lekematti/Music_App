@@ -14,7 +14,9 @@ class MusicCardComponent extends HTMLElement {
                   <h3>${title}</h3>
                   <p>${artist}</p>
                 </div>
-                <star-rating score="${score}"></star-rating>
+                <div class="music-card-rating" style="margin-left: auto; flex-shrink: 0;">
+                    <star-rating score="${score}"></star-rating>
+                </div>
             </a>
         `;
     }

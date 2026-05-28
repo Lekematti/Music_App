@@ -9,11 +9,11 @@ class MusicListItemComponent extends HTMLElement {
         this.innerHTML = `
             <a href="/pages/song.html?id=${songId}" class="list-item" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 10px;">
                 ${image ? `<img class="media-cover" src="${image}" alt="cover" loading="lazy">` : `<div class="item-icon">🎵</div>`}
-                <div class="item-info">
+                <div class="item-info" style="flex: 1; min-width: 0;">
                     <h4 style="margin: 0; font-size: 14px;">${title}</h4>
                     <p style="margin: 5px 0 0 0; font-size: 12px; color: #aaa;">${artist}</p>
                 </div>
-                <div style="margin-left: auto;">
+                <div class="music-card-rating" style="margin-left: auto; flex-shrink: 0;">
                     <star-rating score="${score}"></star-rating>
                 </div>
             </a>

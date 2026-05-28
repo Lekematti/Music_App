@@ -11,11 +11,13 @@ class ListRowItemComponent extends HTMLElement {
             <a href="/pages/song.html?id=${songId}" class="list-row" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 10px;">
                 <span class="row-number">${rank}</span>
                 ${image ? `<img class="media-cover" src="${image}" alt="cover" loading="lazy">` : `<div class="item-icon">🎵</div>`}
-                <div class="item-info">
+                <div class="item-info" style="flex: 1; min-width: 0;">
                     <h4 style="margin: 0;">${title}</h4>
                     <p style="margin: 5px 0 0 0; color: #aaa;">${artist}</p>
                 </div>
-                <star-rating score="${score}"></star-rating>
+                <div class="music-card-rating" style="margin-left: auto; flex-shrink: 0;">
+                    <star-rating score="${score}"></star-rating>
+                </div>
             </a>
         `;
     }

@@ -153,46 +153,37 @@ router.get('/me', protect, async (req, res) => {
 router.put('/me', protect, async (req, res) => {
     try {
         const { username, email } = req.body || {};
-        if (!username && !email) {
-            return res.status(400).json({ message: 'Nothing to update' });
-        }
+        if (!username && !email) return res.status(400).json({ message: 'Nothing to update' });
 
-        const updates = {};
-        if (typeof username === 'string') {
-            const trimmed = username.trim();
-            if (trimmed.length < 3) return res.status(400).json({ message: 'Username must be at least 3 characters long' });
-            updates.username = trimmed;
-        }
-
-        if (typeof email === 'string') {
-            const normalized = normalizeEmail(email);
-            if (!isValidEmail(normalized)) return res.status(400).json({ message: 'Please enter a valid email address' });
-            updates.email = normalized;
-        }
-
-        // Ensure uniqueness if changing username or email
-        if (updates.username || updates.email) {
-            const conflict = await prisma.user.findFirst({
-                where: {
-                    OR: [
-                        updates.email ? { email: updates.email } : undefined,
-                        updates.username ? { username: updates.username } : undefined,
-                    ].filter(Boolean),
-                    NOT: { id: req.user.id }
-                }
-            });
-
-            if (conflict) {
-                return res.status(400).json({ message: 'Username or email already in use' });
+        const buildUpdates = () => {
+            const out = {};
+            if (typeof username === 'string') {
+                const trimmed = username.trim();
+                if (trimmed.length < 3) return { error: 'Username must be at least 3 characters long' };
+                out.username = trimmed;
             }
-        }
+            if (typeof email === 'string') {
+                const normalized = normalizeEmail(email);
+                if (!isValidEmail(normalized)) return { error: 'Please enter a valid email address' };
+                out.email = normalized;
+            }
+            return { updates: out };
+        };
 
-        const updated = await prisma.user.update({
-            where: { id: req.user.id },
-            data: updates,
+        const { error, updates } = buildUpdates();
+        if (error) return res.status(400).json({ message: error });
+        if (!updates || Object.keys(updates).length === 0) return res.status(400).json({ message: 'Nothing to update' });
+
+        const conflict = await prisma.user.findFirst({
+            where: {
+                OR: Object.keys(updates).map(k => ({ [k]: updates[k] })),
+                NOT: { id: req.user.id }
+            }
         });
+        if (conflict) return res.status(400).json({ message: 'Username or email already in use' });
 
-        // Return updated user and refreshed token (in case email changed)
+        const updated = await prisma.user.update({ where: { id: req.user.id }, data: updates });
+
         res.json({
             id: updated.id,
             username: updated.username,
