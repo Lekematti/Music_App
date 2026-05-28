@@ -47,9 +47,56 @@ const extensionFromMime = {
     'image/webp': 'webp',
 };
 
-const buildPath = (userId, ext) => {
+const toStorageFolder = (rawUsername, fallback = 'user') => {
+    const safe = String(rawUsername || '')
+        .trim()
+        .toLowerCase()
+        .replace(/[^a-z0-9._-]+/g, '-')
+        .replace(/-+/g, '-')
+        .replace(/^-+|-+$/g, '');
+
+    if (safe) {
+        return safe;
+    }
+
+    const fallbackSafe = String(fallback || 'user').replace(/[^a-z0-9._-]+/gi, '-');
+    return fallbackSafe || 'user';
+};
+
+const buildPath = (folder, ext) => {
     const uniqueSuffix = crypto.randomBytes(12).toString('hex');
-    return `${userId}/${Date.now()}-${uniqueSuffix}.${ext}`;
+    return `${folder}/${Date.now()}-${uniqueSuffix}.${ext}`;
+};
+
+const writeBucketMarker = async (client, bucket, username, payload) => {
+    if (!client || !bucket || !username || !payload) return;
+    try {
+        let key;
+        let contentType;
+        let body;
+        if (bucket === 'songs') {
+            key = `${username}/.info.mp3`;
+            contentType = 'audio/mpeg';
+            body = Buffer.from([0, 1, 2, 3, 4]);
+        } else {
+            // covers (and others) - use small PNG marker
+            key = `${username}/.info.png`;
+            contentType = 'image/png';
+            // 1x1 transparent PNG
+            body = Buffer.from(
+                'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8Xw8AAn8B9s4hZQAAAABJRU5ErkJggg==',
+                'base64'
+            );
+        }
+
+        const { data, error } = await client.storage.from(bucket).upload(key, body, {
+            contentType,
+            upsert: true,
+        });
+        if (error) console.error('Marker upload error', bucket, key, error.message || error);
+    } catch (err) {
+        console.error(`Failed to write marker for bucket=${bucket} username=${username}`, err?.message || err);
+    }
 };
 
 router.post('/', protect, upload.fields([
@@ -92,8 +139,9 @@ router.post('/', protect, upload.fields([
             return res.status(404).json({ message: 'User not found' });
         }
 
+        const folder = toStorageFolder(user.username, user.id);
         const audioExt = extensionFromMime[audioFile.mimetype] || 'mp3';
-        const audioPath = buildPath(user.id, audioExt);
+        const audioPath = buildPath(folder, audioExt);
         const { error: audioError } = await client.storage
             .from('songs')
             .upload(audioPath, audioFile.buffer, {
@@ -106,9 +154,10 @@ router.post('/', protect, upload.fields([
         }
 
         let imageUrl = null;
+        let imagePath = null;
         if (imageFile) {
             const imageExt = extensionFromMime[imageFile.mimetype] || 'jpg';
-            const imagePath = buildPath(user.id, imageExt);
+            imagePath = buildPath(folder, imageExt);
             const { error: imageError } = await client.storage
                 .from('covers')
                 .upload(imagePath, imageFile.buffer, {
@@ -132,6 +181,16 @@ router.post('/', protect, upload.fields([
                 userId: user.id,
             },
         });
+
+        // Write username markers so Supabase UI shows username folders
+        try {
+            await writeBucketMarker(client, 'songs', user.username, { userId: user.id, songId: newSong.id, audio: audioPath });
+            if (imagePath) {
+                await writeBucketMarker(client, 'covers', user.username, { userId: user.id, songId: newSong.id, cover: imagePath });
+            }
+        } catch (e) {
+            console.error('Failed to write bucket markers:', e?.message || e);
+        }
 
         res.status(201).json(newSong);
     } catch (error) {

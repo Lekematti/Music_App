@@ -1,5 +1,6 @@
 node_modules/
 /.env
 /generated/prisma
-.github
+.github/copilot-instructions.md
+.github/main.yml
 /coverage

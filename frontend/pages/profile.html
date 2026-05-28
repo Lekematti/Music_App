@@ -35,6 +35,10 @@
 				<button id="logout-btn" style="width: 100%; padding: 10px; background-color: #16171b; border: 1px solid #d9534f; color: #d9534f; border-radius: 4px; cursor: pointer; transition: 0.2s;">
 					Logout
 				</button>
+				<br>
+				<button id="delete-account-btn" style="width: 100%; margin-top: 12px; padding: 10px; background-color: #16171b; border: 1px solid #b30000; color: #ff6b6b; border-radius: 4px; cursor: pointer; transition: 0.2s;">
+					Delete Account
+				</button>
 			</div>
 		</aside>
 
@@ -89,8 +93,14 @@
 
         <aside class="profile-info-sidebar" aria-label="Profile information sidebar">
 			<div class="user-profile-card">
-				<div class="user-avatar">
-					<img id="user-avatar-img" src="" alt="User Avatar" style="width: 100%; height: 100%; object-fit: cover;">
+				<div class="user-avatar-wrapper">
+					<div class="user-avatar">
+						<img id="user-avatar-img" src="" alt="User Avatar" style="width: 100%; height: 100%; object-fit: cover;">
+					</div>
+					<button type="button" id="change-avatar-btn" class="avatar-edit-btn" aria-label="Change profile picture" title="Change profile picture">
+						<img src="../assets/icons/upload.png" alt="">
+					</button>
+					<input id="avatar-file-input" name="avatarFile" class="avatar-upload-input" type="file" accept="image/jpeg,image/png,image/webp">
 				</div>
 				<div class="user-info">
 					<h3 id="user-name">Loading...</h3>

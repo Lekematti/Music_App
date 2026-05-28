@@ -2,6 +2,7 @@ const getProfileElements = () => {
     const userNameEl = document.getElementById('user-name');
     const userEmailEl = document.getElementById('user-email');
     const avatarImg = document.getElementById('user-avatar-img');
+    const changeAvatarBtn = document.getElementById('change-avatar-btn');
     const publicationCountEl = document.getElementById('publication-count');
     const totalLikesEl = document.getElementById('total-likes');
     const publicationList = document.querySelector('.publication-list');
@@ -14,6 +15,7 @@ const getProfileElements = () => {
         userNameEl,
         userEmailEl,
         avatarImg,
+        changeAvatarBtn,
         publicationCountEl,
         totalLikesEl,
         publicationList,
@@ -108,6 +110,8 @@ const redirectToLogin = () => {
 const setUserAvatar = (avatarImg, avatarUrl) => {
     if (avatarUrl) {
         avatarImg.src = avatarUrl;
+        avatarImg.style.padding = '';
+        avatarImg.style.opacity = '';
         return;
     }
 
@@ -156,6 +160,30 @@ const fetchCurrentUser = async (token) => {
     return userResponse.json();
 };
 
+const updateProfileAvatar = async (avatarImg, avatarFile) => {
+    const token = localStorage.getItem('token');
+    const formData = new FormData();
+    formData.append('avatarFile', avatarFile);
+
+    const response = await fetch(`${API_BASE}/api/auth/me`, {
+        method: 'PUT',
+        headers: {
+            'Authorization': `Bearer ${token}`,
+        },
+        body: formData,
+    });
+
+    const data = await response.json();
+    if (!response.ok) {
+        throw new Error(data.message || 'Failed to update profile picture');
+    }
+
+    setUserAvatar(avatarImg, data.avatarUrl);
+    if (data.token) {
+        localStorage.setItem('token', data.token);
+    }
+};
+
 // Load user profile data
 const loadUserProfile = async () => {
     try {
@@ -191,16 +219,16 @@ const loadUserProfile = async () => {
         setUserAvatar(avatarImg, userData.avatarUrl);
 
         const songsResponse = await fetch(`${API_BASE}/api/songs?userId=${userData.id}`);
-        
+
         if (songsResponse.ok) {
             const userSongs = await songsResponse.json();
-            
+
             publicationCountEl.textContent = userSongs.length;
             const overallAvg = getOverallAverageRating(userSongs);
 
             updateAvgRatingLabel();
             totalLikesEl.textContent = `${overallAvg} ★`;
-            
+
             renderProfileSongs(publicationList, userSongs);
         }
     } catch (error) {
@@ -226,6 +254,90 @@ const initProfilePage = () => {
             localStorage.removeItem('isLoggedIn');
             globalThis.location.href = './login.html';
         });
+    }
+
+    // Delete account
+    const deleteBtn = document.getElementById('delete-account-btn');
+    if (deleteBtn && !deleteBtn.dataset.listenerAttached) {
+        deleteBtn.addEventListener('click', async () => {
+            const confirmed = globalThis.confirm('Delete your account and all your songs? This cannot be undone.');
+            if (!confirmed) return;
+
+            try {
+                deleteBtn.disabled = true;
+                deleteBtn.setAttribute('aria-busy', 'true');
+                const token = localStorage.getItem('token');
+                const resp = await fetch(`${API_BASE}/api/auth/me`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!resp.ok) {
+                    const data = await resp.json().catch(() => ({}));
+                    throw new Error(data.message || 'Failed to delete account');
+                }
+
+                // Clear local session and redirect to register page
+                localStorage.removeItem('token');
+                localStorage.removeItem('isLoggedIn');
+                globalThis.location.href = './register.html';
+            } catch (err) {
+                console.error('Account delete error:', err);
+                alert(err.message || 'Unable to delete account');
+            } finally {
+                deleteBtn.disabled = false;
+                deleteBtn.removeAttribute('aria-busy');
+            }
+        });
+
+        deleteBtn.dataset.listenerAttached = 'true';
+    }
+
+    const avatarImg = document.getElementById('user-avatar-img');
+    const changeAvatarBtn = document.getElementById('change-avatar-btn');
+    const avatarFileInput = document.getElementById('avatar-file-input');
+    if (changeAvatarBtn && avatarFileInput && !changeAvatarBtn.dataset.listenerAttached) {
+        changeAvatarBtn.addEventListener('click', () => {
+            avatarFileInput.click();
+        });
+
+        changeAvatarBtn.dataset.listenerAttached = 'true';
+    }
+
+    if (avatarFileInput && !avatarFileInput.dataset.listenerAttached) {
+        avatarFileInput.addEventListener('change', async () => {
+            const avatarFile = avatarFileInput.files?.[0];
+            if (!avatarFile) {
+                return;
+            }
+
+            const previewUrl = URL.createObjectURL(avatarFile);
+            setUserAvatar(avatarImg, previewUrl);
+
+            try {
+                if (changeAvatarBtn) {
+                    changeAvatarBtn.disabled = true;
+                    changeAvatarBtn.setAttribute('aria-busy', 'true');
+                }
+
+                await updateProfileAvatar(avatarImg, avatarFile);
+                alert('Profile picture updated');
+            } catch (error) {
+                console.error('Avatar update error:', error);
+                alert(error.message || 'Unable to update profile picture');
+            } finally {
+                URL.revokeObjectURL(previewUrl);
+                avatarFileInput.value = '';
+                if (changeAvatarBtn) {
+                    changeAvatarBtn.disabled = false;
+                    changeAvatarBtn.removeAttribute('aria-busy');
+                }
+            }
+        });
+
+        avatarFileInput.dataset.listenerAttached = 'true';
     }
 
     // Tab switching
