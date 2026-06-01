@@ -41,7 +41,7 @@ describe('Focused uploadRoutes tests', () => {
     process.env.SUPABASE_SERVICE_ROLE_KEY = 'key';
 
     // inject mocked supabase client and mocked prisma
-    const mockSupabase = { storage: { from: (bucket) => ({
+    const mockSupabase = { storage: { from: (_bucket) => ({
       upload: async () => ({ error: null }),
       getPublicUrl: (p) => ({ data: { publicUrl: `https://cdn/${p}` } }),
     }) } };
@@ -105,7 +105,7 @@ describe('Focused uploadRoutes tests', () => {
     process.env.SUPABASE_URL = 'https://example.supabase.co';
     process.env.SUPABASE_SERVICE_ROLE_KEY = 'key';
 
-    const mockSupabase = { storage: { from: (bucket) => ({
+    const mockSupabase = { storage: { from: (_bucket) => ({
       upload: async () => ({ error: { message: 'boom' } }),
       getPublicUrl: (p) => ({ data: { publicUrl: `https://cdn/${p}` } }),
     }) } };
@@ -140,7 +140,7 @@ describe('Focused uploadRoutes tests', () => {
     process.env.SUPABASE_URL = 'https://example.supabase.co';
     process.env.SUPABASE_SERVICE_ROLE_KEY = 'key';
 
-    const mockSupabase = { storage: { from: (bucket) => ({
+    const mockSupabase = { storage: { from: (_bucket) => ({
       upload: async () => ({ error: null }),
       getPublicUrl: (p) => ({ data: { publicUrl: `https://cdn/${p}` } }),
     }) } };

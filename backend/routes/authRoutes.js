@@ -89,6 +89,58 @@ const buildPath = (folder, ext) => {
     return `${folder}/${Date.now()}-${uniqueSuffix}.${ext}`;
 };
 
+const removeStorageObjectIfPresent = async (client, ref) => {
+    if (!client?.storage || !ref?.bucket || !ref?.path) {
+        return;
+    }
+
+    await client.storage.from(ref.bucket).remove([ref.path]).catch(() => {});
+};
+
+const removeSongStorage = async (client, song) => {
+    try {
+        await removeStorageObjectIfPresent(client, songRoutes.extractStorageReference(song.url, 'songs'));
+        await removeStorageObjectIfPresent(client, songRoutes.extractStorageReference(song.imageUrl, 'covers'));
+    } catch (err) {
+        console.error('Failed to remove storage for song', song.id, err?.message || err);
+    }
+};
+
+const removeUserAvatarStorage = async (client, user) => {
+    if (!user.avatarUrl) {
+        return;
+    }
+
+    try {
+        await removeStorageObjectIfPresent(client, songRoutes.extractStorageReference(user.avatarUrl, 'avatars'));
+    } catch (err) {
+        console.error('Failed to remove avatar from storage for user', user.id, err?.message || err);
+    }
+};
+
+const deleteUserAccountAndRelatedData = async (user, client) => {
+    const songs = await prisma.song.findMany({ where: { userId: user.id }, select: { id: true, url: true, imageUrl: true } });
+    const songIds = songs.map((s) => s.id);
+
+    await prisma.$transaction(async (tx) => {
+        if (songIds.length > 0) {
+            await tx.rating.deleteMany({ where: { songId: { in: songIds } } });
+        }
+
+        await tx.rating.deleteMany({ where: { userId: user.id } });
+        await tx.song.deleteMany({ where: { userId: user.id } });
+        await tx.user.delete({ where: { id: user.id } });
+    });
+
+    if (client && typeof songRoutes.extractStorageReference === 'function') {
+        for (const song of songs) {
+            await removeSongStorage(client, song);
+        }
+
+        await removeUserAvatarStorage(client, user);
+    }
+};
+
 const ensureProfilePicturesBucket = async (client) => {
     if (!client?.storage) {
         return { error: 'Supabase storage is not configured' };
@@ -188,7 +240,7 @@ const writeAvatarMarker = async (client, username, userId, avatarPath) => {
         contentType = 'image/png';
         body = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8Xw8AAn8B9s4hZQAAAABJRU5ErkJggg==', 'base64');
 
-        const { data, error } = await client.storage.from(PROFILE_PICTURES_BUCKET).upload(key, body, {
+        const { error } = await client.storage.from(PROFILE_PICTURES_BUCKET).upload(key, body, {
             contentType,
             upsert: true,
         });
@@ -249,37 +301,89 @@ const normalizeAvatarUrl = (avatarUrl) => {
     }
 };
 
+const validateRegistrationInput = ({ username, email, password, avatarUrl }) => {
+    const trimmedUsername = typeof username === 'string' ? username.trim() : '';
+    const normalizedEmail = typeof email === 'string' ? normalizeEmail(email) : '';
+    const passwordValue = typeof password === 'string' ? password : '';
+    const { value: normalizedAvatarUrl, error: avatarUrlError } = normalizeAvatarUrl(avatarUrl);
+
+    if (avatarUrlError) {
+        return { error: avatarUrlError };
+    }
+
+    if (!trimmedUsername || !normalizedEmail || !passwordValue) {
+        return { error: 'Please fill in all fields' };
+    }
+
+    if (trimmedUsername.length < 3) {
+        return { error: 'Username must be at least 3 characters long' };
+    }
+
+    if (!isValidEmail(normalizedEmail)) {
+        return { error: 'Please enter a valid email address' };
+    }
+
+    if (passwordValue.length < 6) {
+        return { error: 'Password must be at least 6 characters long' };
+    }
+
+    return {
+        trimmedUsername,
+        normalizedEmail,
+        passwordValue,
+        normalizedAvatarUrl,
+    };
+};
+
+const persistAvatarForUser = async ({ avatarFile, trimmedUsername, userId, resolvedAvatarUrl, newUser }) => {
+    if (avatarFile) {
+        const client = getSupabase();
+        if (!client) {
+            await prisma.user.delete({ where: { id: newUser.id } }).catch(() => {});
+            return { error: 'Supabase storage is not configured' };
+        }
+
+        const uploadedAvatar = await uploadProfilePicture(client, trimmedUsername, avatarFile, userId);
+        if (uploadedAvatar?.error) {
+            await prisma.user.delete({ where: { id: newUser.id } }).catch(() => {});
+            return { error: uploadedAvatar.error, status: 502 };
+        }
+
+        const finalAvatarPath = uploadedAvatar?.value ?? null;
+        if (finalAvatarPath) {
+            await prisma.user.update({ where: { id: userId }, data: { avatarUrl: finalAvatarPath } });
+            try {
+                await writeAvatarMarker(client, trimmedUsername, userId, finalAvatarPath).catch(() => {});
+            } catch (err) {
+                console.warn('writeAvatarMarker failed', err?.message || err);
+            }
+        }
+
+        return { value: finalAvatarPath };
+    }
+
+    if (resolvedAvatarUrl) {
+        await prisma.user.update({ where: { id: userId }, data: { avatarUrl: resolvedAvatarUrl } });
+        return { value: resolvedAvatarUrl };
+    }
+
+    return { value: null };
+};
+
 // @desc    Register a new user
 // @route   POST /api/auth/register
 // @access  Public
 router.post('/register', upload.single('avatarFile'), async (req, res) => {
     try {
         const { username, email, password, avatarUrl } = req.body || {};
-        const trimmedUsername = typeof username === 'string' ? username.trim() : '';
-        const normalizedEmail = typeof email === 'string' ? normalizeEmail(email) : '';
-        const passwordValue = typeof password === 'string' ? password : '';
         const avatarFile = req.file;
-        const { value: normalizedAvatarUrl, error: avatarUrlError } = normalizeAvatarUrl(avatarUrl);
+        const registrationInput = validateRegistrationInput({ username, email, password, avatarUrl });
 
-        if (avatarUrlError) {
-            return res.status(400).json({ message: avatarUrlError });
+        if (registrationInput.error) {
+            return res.status(400).json({ message: registrationInput.error });
         }
 
-        if (!trimmedUsername || !normalizedEmail || !passwordValue) {
-            return res.status(400).json({ message: 'Please fill in all fields' });
-        }
-
-        if (trimmedUsername.length < 3) {
-            return res.status(400).json({ message: 'Username must be at least 3 characters long' });
-        }
-
-        if (!isValidEmail(normalizedEmail)) {
-            return res.status(400).json({ message: 'Please enter a valid email address' });
-        }
-
-        if (passwordValue.length < 6) {
-            return res.status(400).json({ message: 'Password must be at least 6 characters long' });
-        }
+        const { trimmedUsername, normalizedEmail, passwordValue, normalizedAvatarUrl } = registrationInput;
 
         // Check if email or username already exists in database
         const userExists = await prisma.user.findFirst({
@@ -299,8 +403,6 @@ router.post('/register', upload.single('avatarFile'), async (req, res) => {
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(passwordValue, salt);
 
-        let resolvedAvatarUrl = normalizedAvatarUrl;
-
         // Create user in the database (avatar will be uploaded using user.id if file provided)
         const newUser = await prisma.user.create({
             data: {
@@ -311,42 +413,19 @@ router.post('/register', upload.single('avatarFile'), async (req, res) => {
             }
         });
 
-        // If an avatar file was provided, upload it using the user's id as the folder
-        let finalAvatarPath = null;
-        if (avatarFile) {
-            const client = getSupabase();
-            if (!client) {
-                // rollback: delete created user to avoid orphaned DB row
-                await prisma.user.delete({ where: { id: newUser.id } }).catch(() => {});
-                return res.status(500).json({ message: 'Supabase storage is not configured' });
-            }
+        const persistedAvatar = await persistAvatarForUser({
+            avatarFile,
+            trimmedUsername,
+            userId: newUser.id,
+            resolvedAvatarUrl: normalizedAvatarUrl,
+            newUser,
+        });
 
-            const uploadedAvatar = await uploadProfilePicture(client, trimmedUsername, avatarFile, newUser.id);
-            if (uploadedAvatar?.error) {
-                // rollback: delete created user
-                await prisma.user.delete({ where: { id: newUser.id } }).catch(() => {});
-                return res.status(502).json({ message: uploadedAvatar.error });
-            }
-
-            finalAvatarPath = uploadedAvatar?.value ?? null;
-
-            if (finalAvatarPath) {
-                await prisma.user.update({ where: { id: newUser.id }, data: { avatarUrl: finalAvatarPath } });
-                    // Write a human-readable marker (username prefix) for Supabase UI
-                    try {
-                        await writeAvatarMarker(client, trimmedUsername, newUser.id, finalAvatarPath).catch(() => {});
-                    } catch (err) {
-                        // Non-fatal: marker upload failure should not block registration
-                        console.warn('writeAvatarMarker failed', err?.message || err);
-                    }
-            }
-        } else if (resolvedAvatarUrl) {
-            // If registration provided an external avatarUrl (http), store it as-is
-            await prisma.user.update({ where: { id: newUser.id }, data: { avatarUrl: resolvedAvatarUrl } });
-            finalAvatarPath = resolvedAvatarUrl;
+        if (persistedAvatar.error) {
+            return res.status(persistedAvatar.status || 500).json({ message: persistedAvatar.error });
         }
 
-        const resolved = await resolveAvatarUrl(finalAvatarPath || null);
+        const resolved = await resolveAvatarUrl(persistedAvatar.value || null);
         const playbackUrl = typeof songRoutes.toSignedPlaybackUrl === 'function'
             ? await songRoutes.toSignedPlaybackUrl(resolved, 'avatars')
             : resolved;
@@ -438,79 +517,95 @@ router.get('/me', protect, async (req, res) => {
 // @desc    Update logged in user's username, email, or profile picture
 // @route   PUT /api/auth/me
 // @access  Private
+const buildProfileUpdateData = ({ username, email, avatarUrl, avatarFile }) => {
+    const updates = {};
+
+    if (typeof username === 'string') {
+        const trimmed = username.trim();
+        if (trimmed.length < 3) return { error: 'Username must be at least 3 characters long' };
+        updates.username = trimmed;
+    }
+
+    if (typeof email === 'string') {
+        const normalized = normalizeEmail(email);
+        if (!isValidEmail(normalized)) return { error: 'Please enter a valid email address' };
+        updates.email = normalized;
+    }
+
+    if (avatarFile) updates.avatarFile = avatarFile;
+
+    if (avatarUrl !== undefined) {
+        const { value, error } = normalizeAvatarUrl(avatarUrl);
+        if (error) return { error };
+        updates.avatarUrl = value;
+    }
+
+    return { updates };
+};
+
+const uploadAvatarIfNeeded = async (updates, userId) => {
+    if (!updates.avatarFile) return { updates };
+
+    const client = getSupabase();
+    if (!client) return { error: 'Supabase storage is not configured', status: 500 };
+
+    const currentUser = await prisma.user.findUnique({
+        where: { id: userId },
+        select: { username: true },
+    });
+    if (!currentUser) return { error: 'User not found', status: 404 };
+
+    const storageUsername = updates.username || currentUser.username;
+    const uploadedAvatar = await uploadProfilePicture(client, storageUsername, updates.avatarFile, userId);
+    if (uploadedAvatar?.error) return { error: uploadedAvatar.error, status: 502 };
+
+    return { updates: { ...updates, avatarUrl: uploadedAvatar?.value ?? null } };
+};
+
+const findUpdateConflict = async (updates, userId) => {
+    const conflictChecks = [];
+    if (updates.username) conflictChecks.push({ username: updates.username });
+    if (updates.email) conflictChecks.push({ email: updates.email });
+
+    if (conflictChecks.length === 0) return null;
+
+    return prisma.user.findFirst({
+        where: {
+            OR: conflictChecks,
+            NOT: { id: userId }
+        }
+    });
+};
+
+const ensureAvatarMarker = async (user) => {
+    try {
+        const client = getSupabase();
+        if (client && user.username) {
+            await writeAvatarMarker(client, user.username, user.id, user.avatarUrl);
+        }
+    } catch (e) {
+        console.error('Failed to ensure avatar marker after update', e?.message || e);
+    }
+};
+
 router.put('/me', protect, upload.single('avatarFile'), async (req, res) => {
     try {
         const { username, email, avatarUrl } = req.body || {};
         const avatarFile = req.file;
         if (!username && !email && avatarUrl === undefined && !avatarFile) return res.status(400).json({ message: 'Nothing to update' });
 
-        const buildUpdates = () => {
-            const out = {};
-            if (typeof username === 'string') {
-                const trimmed = username.trim();
-                if (trimmed.length < 3) return { error: 'Username must be at least 3 characters long' };
-                out.username = trimmed;
-            }
-            if (typeof email === 'string') {
-                const normalized = normalizeEmail(email);
-                if (!isValidEmail(normalized)) return { error: 'Please enter a valid email address' };
-                out.email = normalized;
-            }
-            if (avatarFile) {
-                out.avatarFile = avatarFile;
-            }
-            if (avatarUrl !== undefined) {
-                const { value, error } = normalizeAvatarUrl(avatarUrl);
-                if (error) return { error };
-                out.avatarUrl = value;
-            }
-            return { updates: out };
-        };
+        const built = buildProfileUpdateData({ username, email, avatarUrl, avatarFile });
+        if (built.error) return res.status(400).json({ message: built.error });
 
-        const { error, updates } = buildUpdates();
-        if (error) return res.status(400).json({ message: error });
-        if (!updates || Object.keys(updates).length === 0) return res.status(400).json({ message: 'Nothing to update' });
+        let updates = built.updates || {};
+        if (Object.keys(updates).length === 0) return res.status(400).json({ message: 'Nothing to update' });
 
-        let finalAvatarUrl = updates.avatarUrl;
-        if (updates.avatarFile) {
-            const client = getSupabase();
-            if (!client) {
-                return res.status(500).json({ message: 'Supabase storage is not configured' });
-            }
+        const avatarResult = await uploadAvatarIfNeeded(updates, req.user.id);
+        if (avatarResult.error) return res.status(avatarResult.status || 500).json({ message: avatarResult.error });
+        updates = avatarResult.updates;
 
-            const currentUser = await prisma.user.findUnique({
-                where: { id: req.user.id },
-                select: { username: true },
-            });
-            if (!currentUser) {
-                return res.status(404).json({ message: 'User not found' });
-            }
-
-            const storageUsername = updates.username || currentUser.username;
-            const uploadedAvatar = await uploadProfilePicture(client, storageUsername, updates.avatarFile, req.user.id);
-            if (uploadedAvatar?.error) {
-                return res.status(502).json({ message: uploadedAvatar.error });
-            }
-
-            finalAvatarUrl = uploadedAvatar?.value ?? null;
-            delete updates.avatarFile;
-            delete updates.avatarUrl;
-            updates.avatarUrl = finalAvatarUrl;
-        }
-
-        const conflictChecks = [];
-        if (updates.username) conflictChecks.push({ username: updates.username });
-        if (updates.email) conflictChecks.push({ email: updates.email });
-
-        if (conflictChecks.length > 0) {
-            const conflict = await prisma.user.findFirst({
-                where: {
-                    OR: conflictChecks,
-                    NOT: { id: req.user.id }
-                }
-            });
-            if (conflict) return res.status(400).json({ message: 'Username or email already in use' });
-        }
+        const conflict = await findUpdateConflict(updates, req.user.id);
+        if (conflict) return res.status(400).json({ message: 'Username or email already in use' });
 
         const updated = await prisma.user.update({ where: { id: req.user.id }, data: updates });
 
@@ -519,15 +614,7 @@ router.put('/me', protect, upload.single('avatarFile'), async (req, res) => {
             ? await songRoutes.toSignedPlaybackUrl(resolved, 'avatars')
             : resolved;
 
-        // Ensure username-based marker exists for Supabase UI
-        try {
-            const client = getSupabase();
-            if (client && updated.username) {
-                await writeAvatarMarker(client, updated.username, updated.id, updated.avatarUrl);
-            }
-        } catch (e) {
-            console.error('Failed to ensure avatar marker after update', e?.message || e);
-        }
+        await ensureAvatarMarker(updated);
 
         res.json({
             id: updated.id,
@@ -584,57 +671,7 @@ router.delete('/me', protect, async (req, res) => {
 
         const client = getSupabase();
 
-        // Collect songs and storage references before deleting DB rows
-        const songs = await prisma.song.findMany({ where: { userId: user.id }, select: { id: true, url: true, imageUrl: true } });
-        const songIds = songs.map(s => s.id);
-
-        // Perform deletes in a transaction to avoid FK constraint issues
-        await prisma.$transaction(async (tx) => {
-            if (songIds.length > 0) {
-                await tx.rating.deleteMany({ where: { songId: { in: songIds } } });
-            }
-
-            // Delete ratings created by the user (on other songs)
-            await tx.rating.deleteMany({ where: { userId: user.id } });
-
-            // Delete songs by the user
-            await tx.song.deleteMany({ where: { userId: user.id } });
-
-            // Finally delete the user
-            await tx.user.delete({ where: { id: user.id } });
-        });
-
-        // After DB transaction, attempt best-effort removal of storage objects
-        if (client && typeof songRoutes.extractStorageReference === 'function') {
-            // Remove audio and cover objects for deleted songs
-            for (const song of songs) {
-                try {
-                    const audioRef = songRoutes.extractStorageReference(song.url, 'songs');
-                    if (audioRef && audioRef.bucket && audioRef.path) {
-                        await client.storage.from(audioRef.bucket).remove([audioRef.path]).catch(() => {});
-                    }
-
-                    const imageRef = songRoutes.extractStorageReference(song.imageUrl, 'covers');
-                    if (imageRef && imageRef.bucket && imageRef.path) {
-                        await client.storage.from(imageRef.bucket).remove([imageRef.path]).catch(() => {});
-                    }
-                } catch (err) {
-                    console.error('Failed to remove storage for song', song.id, err?.message || err);
-                }
-            }
-
-            // Remove avatar
-            if (user.avatarUrl) {
-                try {
-                    const avatarRef = songRoutes.extractStorageReference(user.avatarUrl, 'avatars');
-                    if (avatarRef && avatarRef.bucket && avatarRef.path) {
-                        await client.storage.from(avatarRef.bucket).remove([avatarRef.path]).catch(() => {});
-                    }
-                } catch (err) {
-                    console.error('Failed to remove avatar from storage for user', user.id, err?.message || err);
-                }
-            }
-        }
+        await deleteUserAccountAndRelatedData(user, client);
 
         res.json({ message: 'Account and related data deleted' });
     } catch (error) {

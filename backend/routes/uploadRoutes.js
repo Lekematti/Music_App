@@ -68,6 +68,63 @@ const buildPath = (folder, ext) => {
     return `${folder}/${Date.now()}-${uniqueSuffix}.${ext}`;
 };
 
+const validateTitleAndArtist = (req) => {
+    const title = typeof req.body.title === 'string' ? req.body.title.trim() : '';
+    const artist = typeof req.body.artist === 'string' ? req.body.artist.trim() : '';
+    if (!title || !artist) {
+        return { valid: false, error: 'Title and artist are required fields' };
+    }
+    return { valid: true, title, artist };
+};
+
+const validateAudioFile = (audioFile) => {
+    if (!audioFile) {
+        return { valid: false, error: 'Audio file is required' };
+    }
+    if (!audioMimeTypes.has(audioFile.mimetype)) {
+        return { valid: false, error: 'Audio file must be an MP3' };
+    }
+    return { valid: true };
+};
+
+const validateImageFile = (imageFile) => {
+    if (imageFile && !imageMimeTypes.has(imageFile.mimetype)) {
+        return { valid: false, error: 'Cover image must be JPG, PNG, or WEBP' };
+    }
+    return { valid: true };
+};
+
+const uploadAudioFile = async (client, audioFile, folder) => {
+    const audioExt = extensionFromMime[audioFile.mimetype] || 'mp3';
+    const audioPath = buildPath(folder, audioExt);
+    const { error: audioError } = await client.storage
+        .from('songs')
+        .upload(audioPath, audioFile.buffer, {
+            contentType: audioFile.mimetype,
+            upsert: false,
+        });
+    if (audioError) {
+        return { success: false, error: `Audio upload failed: ${audioError.message}` };
+    }
+    return { success: true, audioPath };
+};
+
+const uploadImageFile = async (client, imageFile, folder) => {
+    const imageExt = extensionFromMime[imageFile.mimetype] || 'jpg';
+    const imagePath = buildPath(folder, imageExt);
+    const { error: imageError } = await client.storage
+        .from('covers')
+        .upload(imagePath, imageFile.buffer, {
+            contentType: imageFile.mimetype,
+            upsert: false,
+        });
+    if (imageError) {
+        return { success: false, error: `Image upload failed: ${imageError.message}` };
+    }
+    const imageUrl = client.storage.from('covers').getPublicUrl(imagePath).data.publicUrl;
+    return { success: true, imagePath, imageUrl };
+};
+
 const writeBucketMarker = async (client, bucket, username, payload) => {
     if (!client || !bucket || !username || !payload) return;
     try {
@@ -89,7 +146,7 @@ const writeBucketMarker = async (client, bucket, username, payload) => {
             );
         }
 
-        const { data, error } = await client.storage.from(bucket).upload(key, body, {
+        const { error } = await client.storage.from(bucket).upload(key, body, {
             contentType,
             upsert: true,
         });
@@ -109,26 +166,22 @@ router.post('/', protect, upload.fields([
             return res.status(500).json({ message: 'Supabase storage is not configured' });
         }
 
-        const title = typeof req.body.title === 'string' ? req.body.title.trim() : '';
-        const artist = typeof req.body.artist === 'string' ? req.body.artist.trim() : '';
-
-        if (!title || !artist) {
-            return res.status(400).json({ message: 'Title and artist are required fields' });
+        const titleAndArtist = validateTitleAndArtist(req);
+        if (!titleAndArtist.valid) {
+            return res.status(400).json({ message: titleAndArtist.error });
         }
 
         const audioFile = req.files?.audioFile?.[0];
         const imageFile = req.files?.imageFile?.[0];
 
-        if (!audioFile) {
-            return res.status(400).json({ message: 'Audio file is required' });
+        const audioValidation = validateAudioFile(audioFile);
+        if (!audioValidation.valid) {
+            return res.status(400).json({ message: audioValidation.error });
         }
 
-        if (!audioMimeTypes.has(audioFile.mimetype)) {
-            return res.status(400).json({ message: 'Audio file must be an MP3' });
-        }
-
-        if (imageFile && !imageMimeTypes.has(imageFile.mimetype)) {
-            return res.status(400).json({ message: 'Cover image must be JPG, PNG, or WEBP' });
+        const imageValidation = validateImageFile(imageFile);
+        if (!imageValidation.valid) {
+            return res.status(400).json({ message: imageValidation.error });
         }
 
         const user = await prisma.user.findUnique({
@@ -140,42 +193,29 @@ router.post('/', protect, upload.fields([
         }
 
         const folder = toStorageFolder(user.username, user.id);
-        const audioExt = extensionFromMime[audioFile.mimetype] || 'mp3';
-        const audioPath = buildPath(folder, audioExt);
-        const { error: audioError } = await client.storage
-            .from('songs')
-            .upload(audioPath, audioFile.buffer, {
-                contentType: audioFile.mimetype,
-                upsert: false,
-            });
-
-        if (audioError) {
-            return res.status(502).json({ message: `Audio upload failed: ${audioError.message}` });
+        const audioUpload = await uploadAudioFile(client, audioFile, folder);
+        if (!audioUpload.success) {
+            return res.status(502).json({ message: audioUpload.error });
         }
+
+        const audioPath = audioUpload.audioPath;
 
         let imageUrl = null;
         let imagePath = null;
         if (imageFile) {
-            const imageExt = extensionFromMime[imageFile.mimetype] || 'jpg';
-            imagePath = buildPath(folder, imageExt);
-            const { error: imageError } = await client.storage
-                .from('covers')
-                .upload(imagePath, imageFile.buffer, {
-                    contentType: imageFile.mimetype,
-                    upsert: false,
-                });
-
-            if (imageError) {
-                return res.status(502).json({ message: `Image upload failed: ${imageError.message}` });
+            const imageUpload = await uploadImageFile(client, imageFile, folder);
+            if (!imageUpload.success) {
+                return res.status(502).json({ message: imageUpload.error });
             }
 
-            imageUrl = client.storage.from('covers').getPublicUrl(imagePath).data.publicUrl;
+            imagePath = imageUpload.imagePath;
+            imageUrl = imageUpload.imageUrl;
         }
 
         const newSong = await prisma.song.create({
             data: {
-                title,
-                artist,
+                title: titleAndArtist.title,
+                artist: titleAndArtist.artist,
                 url: audioPath,
                 imageUrl,
                 userId: user.id,

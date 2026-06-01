@@ -37,7 +37,7 @@ describe('Song APIs', () => {
                 vi.stubEnv('SUPABASE_SERVICE_ROLE_KEY', 'service-key');
                 // re-require server to pick up mocks defined above
                 // app must be required after vi.resetModules() so mocks apply
-                // eslint-disable-next-line @typescript-eslint/no-var-requires
+                // 
                 app = require('../../server');
         });
 

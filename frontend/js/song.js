@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 const loadSongById = async (songId) => {
     if (!songId) {
         return { title: 'Unknown Song', artist: 'No artist', url: '' };

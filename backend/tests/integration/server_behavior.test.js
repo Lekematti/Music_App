@@ -18,7 +18,7 @@ describe('server behavior', () => {
 
   it('registerTestRoute registers handler and error middleware handles thrown error, and noop method does nothing', async () => {
     const app = require('../../server');
-    app.registerTestRoute('get', '/boom', (req, res) => { throw new Error('boom'); });
+    app.registerTestRoute('get', '/boom', (_req, _res) => { throw new Error('boom'); });
     app.registerTestRoute('nope', '/noop', () => {});
 
     const res = await request(app).get('/boom');

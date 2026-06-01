@@ -5,7 +5,7 @@ describe('Server CORS config', () => {
     vi.resetModules();
     vi.stubEnv('CORS_ORIGIN', 'http://example.com');
     // require server to execute CORS setup
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    // 
     const app = require('../../server');
     expect(app).toBeTruthy();
   });
@@ -13,7 +13,7 @@ describe('Server CORS config', () => {
   it('loads with empty CORS_ORIGIN', async () => {
     vi.resetModules();
     vi.stubEnv('CORS_ORIGIN', '');
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    // 
     const app = require('../../server');
     expect(app).toBeTruthy();
   });

@@ -4,3 +4,4 @@ node_modules/
 .github/copilot-instructions.md
 .github/main.yml
 /coverage
+/scripts

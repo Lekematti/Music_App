@@ -16,7 +16,7 @@ describe('Player component', () => {
         // Prevent JSDOM/undici from trying to resolve relative URLs during tests
         // Return a small audio blob so the component can create an object URL.
         globalThis.__originalFetch = globalThis.fetch;
-        globalThis.fetch = vi.fn(async (input) => {
+        globalThis.fetch = vi.fn(async (_input) => {
             return {
                 ok: true,
                 blob: async () => new Blob(['dummy'], { type: 'audio/mpeg' }),

@@ -6,11 +6,20 @@ import prisma from '../../prisma/prismaClient';
 
 const require = createRequire(import.meta.url);
 const authRoutes = require('../../routes/authRoutes');
+const uploadPaths = [];
 
 const mockSupabaseClient = {
     storage: {
+        listBuckets: async () => ({
+            data: [{ name: 'avatars' }],
+            error: null,
+        }),
+        createBucket: async () => ({ error: null }),
         from: () => ({
-            upload: async () => ({ error: null }),
+            upload: async (path) => {
+                uploadPaths.push(path);
+                return { error: null };
+            },
             getPublicUrl: (path) => ({ data: { publicUrl: `https://example.com/${path}` } }),
             remove: async () => ({ error: null }),
             download: async () => ({ data: new Blob(['x']), error: null }),
@@ -30,6 +39,7 @@ const uniqueUser = () => {
 describe('Auth APIs', () => {
     beforeEach(() => {
         process.env.JWT_SECRET = 'testsecret';
+        uploadPaths.length = 0;
         authRoutes.setSupabaseClient(mockSupabaseClient);
     });
 
@@ -55,6 +65,7 @@ describe('Auth APIs', () => {
         expect(res.body).toHaveProperty('token');
         expect(res.body.email).toBe(user.email);
         expect(res.body.avatarUrl).toMatch(/^https:\/\/example\.com\/.+\.png$/);
+        expect(uploadPaths[0]).toMatch(/^testuser-.+\/avatar\/.+\.png$/);
     });
 
     it('returns 400 for duplicate registration', async () => {
@@ -104,5 +115,6 @@ describe('Auth APIs', () => {
 
         expect(updated.status).toBe(200);
         expect(updated.body.avatarUrl).toMatch(/^https:\/\/example\.com\/.+\.jpg$/);
+        expect(uploadPaths[0]).toMatch(/^testuser-.+\/avatar\/.+\.jpg$/);
     });
 });

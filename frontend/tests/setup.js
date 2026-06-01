@@ -1,6 +1,6 @@
 // Frontend test setup — stub global fetch for jsdom tests
 if (typeof globalThis.fetch !== 'function') {
-  globalThis.fetch = (input, init) => {
+  globalThis.fetch = (_input, _init) => {
     return Promise.resolve({
       ok: true,
       blob: async () => new Blob([''], { type: 'audio/mpeg' }),

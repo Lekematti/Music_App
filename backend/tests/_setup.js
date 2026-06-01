@@ -17,7 +17,7 @@ async function cleanTestData() {
       return;
     }
 
-    await prisma.like.deleteMany({ where: { user: { email: { startsWith: 'test-', endsWith: '@example.com' } } } }).catch(()=>{});
+    await prisma.rating.deleteMany({ where: { user: { email: { startsWith: 'test-', endsWith: '@example.com' } } } }).catch(()=>{});
     await prisma.song.deleteMany({ where: { user: { email: { startsWith: 'test-', endsWith: '@example.com' } } } }).catch(()=>{});
     await prisma.user.deleteMany({ where: { email: { startsWith: 'test-', endsWith: '@example.com' } } }).catch(()=>{});
 
