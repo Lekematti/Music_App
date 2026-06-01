@@ -18,15 +18,15 @@
     "format": "prettier --write .",
     "test": "vitest --run",
     "test:watch": "vitest",
-    "test:backend": "vitest run backend/tests/**/*.test.js",
-    "test:frontend": "vitest run frontend/tests/**/*.test.js",
-    "coverage": "vitest run --coverage",
-    "coverage:backend": "vitest run --coverage backend/tests/**/*.test.js",
-    "coverage:frontend": "vitest run --coverage frontend/tests/**/*.test.js",
-    "test:unit": "vitest run backend/tests/unit",
-    "test:integration": "vitest run backend/tests/integration",
     "frontend": "vite",
-    "backend": "node backend/index.js"
+    "backend": "node backend/index.js",
+    "coverage": "vitest run --coverage",
+    "coverage:backend": "vitest run --coverage backend/tests",
+    "coverage:frontend": "vitest run --coverage frontend/tests",
+    "test:frontend": "vitest run frontend/tests",
+    "test:backend": "vitest run backend/tests",
+    "test:unit": "vitest run backend/tests/unit",
+    "test:integration": "vitest run backend/tests/integration"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
