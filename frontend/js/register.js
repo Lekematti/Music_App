@@ -1,3 +1,5 @@
+import { API_BASE } from './config.js';
+
 (() => {
     const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
@@ -74,7 +76,7 @@
                     payload.append('avatarFile', avatarFile);
                 }
 
-                const response = await fetch('/api/auth/register', {
+                const response = await fetch(`${API_BASE}/api/auth/register`, {
                     method: 'POST',
                     body: payload,
                 });

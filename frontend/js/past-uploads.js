@@ -1,3 +1,5 @@
+import { API_BASE } from './config.js';
+
 const initPastUploads = async () => {
     const listContainer = document.getElementById('past-uploads-list');
     if (!listContainer) {
@@ -21,7 +23,7 @@ const initPastUploads = async () => {
         }
 
         // Fetch songs specifically for the logged-in user
-        const response = await fetch(`/api/songs?userId=${currentUserId}`);
+        const response = await fetch(`${API_BASE}/api/songs?userId=${currentUserId}`);
         
         if (response.ok) {
             let songs = await response.json();

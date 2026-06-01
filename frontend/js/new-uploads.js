@@ -1,3 +1,5 @@
+import { API_BASE } from './config.js';
+
 const initNewUploads = () => {
     const listContainer = document.getElementById('new-uploads-list');
     if (!listContainer) {
@@ -8,7 +10,7 @@ const initNewUploads = () => {
     async function loadSongs(page = 1) {
         try {
             // Fetch all songs from backend
-            const response = await fetch('/api/songs');
+            const response = await fetch(`${API_BASE}/api/songs`);
             
             if (response.ok) {
                 const allSongs = await response.json();

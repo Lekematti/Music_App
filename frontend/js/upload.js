@@ -1,3 +1,5 @@
+import { API_BASE } from './config.js';
+
 const initUpload = () => {
     const uploadForm = document.getElementById('upload-form');
     if (!uploadForm || uploadForm.dataset.initialized) {
@@ -44,7 +46,7 @@ const initUpload = () => {
                 formData.append('imageFile', imageFile);
             }
 
-            const res = await fetch('/api/uploads', {
+            const res = await fetch(`${API_BASE}/api/uploads`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`

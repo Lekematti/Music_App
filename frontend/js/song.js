@@ -1,3 +1,5 @@
+import { API_BASE } from './config.js';
+
 /* eslint-disable no-unused-vars */
 const loadSongById = async (songId) => {
     if (!songId) {
@@ -5,7 +7,7 @@ const loadSongById = async (songId) => {
     }
 
     try {
-        const response = await fetch(`/api/songs/${songId}`);
+        const response = await fetch(`${API_BASE}/api/songs/${songId}`);
         if (!response.ok) {
             console.error('Failed to fetch song details');
             return { title: 'Song not found', artist: 'Unknown', url: '' };
@@ -24,7 +26,7 @@ const getCurrentUser = async () => {
     const token = localStorage.getItem('token');
     if (!token) return null;
     try {
-        const res = await fetch('/api/auth/me', { headers: { 'Authorization': `Bearer ${token}` }});
+        const res = await fetch(`${API_BASE}/api/auth/me`, { headers: { 'Authorization': `Bearer ${token}` }});
         if (res.ok) {
             return await res.json();
         }
@@ -66,7 +68,7 @@ const submitRating = async (songId, score) => {
     }
     
     try {
-        const response = await fetch(`/api/songs/${songId}/rate`, {
+        const response = await fetch(`${API_BASE}/api/songs/${songId}/rate`, {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${token}`,

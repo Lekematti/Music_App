@@ -1,3 +1,5 @@
+import { API_BASE } from './config.js';
+
 const getProfileElements = () => {
     const userNameEl = document.getElementById('user-name');
     const userEmailEl = document.getElementById('user-email');
@@ -25,9 +27,9 @@ const getProfileElements = () => {
 // API base: when running frontend via Vite dev server (port 5173),
 // send requests to backend on localhost:5000. In production the backend
 // serves the frontend so use relative paths.
-const API_BASE = (globalThis.location.hostname === 'localhost' && globalThis.location.port === '5173')
-    ? 'http://localhost:5000'
-    : '';
+// const API_BASE = (globalThis.location.hostname === 'localhost' && globalThis.location.port === '5173')
+//     ? 'http://localhost:5000'
+//     : '';
 
 const renderProfileSongs = (publicationList, userSongs) => {
     publicationList.innerHTML = '';

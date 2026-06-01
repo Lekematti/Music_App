@@ -1,3 +1,5 @@
+import { API_BASE } from './config.js';
+
 class TopBarComponent extends HTMLElement {
     connectedCallback() {
         const basePath = '/';
@@ -74,7 +76,7 @@ class TopBarComponent extends HTMLElement {
             suggestions.innerHTML = '<p class="search-suggestions-empty">Searching...</p>';
 
             try {
-                const response = await fetch(`/api/songs?search=${encodeURIComponent(query.trim())}`);
+                const response = await fetch(`${API_BASE}/api/songs?search=${encodeURIComponent(query.trim())}`);
 
                 if (currentToken !== fetchToken) {
                     return;

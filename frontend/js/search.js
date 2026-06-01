@@ -1,3 +1,5 @@
+import { API_BASE } from './config.js';
+
 const createResultItem = (song, index) => {
     const item = document.createElement('list-row-item');
     item.setAttribute('song-id', song.id);
@@ -60,7 +62,7 @@ const initSearch = async () => {
     renderSearchResults(resultsList, [], `Searching for “${query}”…`, '<p style="color: #888;">Searching...</p>');
 
     try {
-        const response = await fetch(`/api/songs?search=${encodeURIComponent(query)}`);
+        const response = await fetch(`${API_BASE}/api/songs?search=${encodeURIComponent(query)}`);
 
         if (!response.ok) {
             throw new Error(`Request failed with status ${response.status}`);

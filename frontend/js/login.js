@@ -1,3 +1,5 @@
+import { API_BASE } from './config.js';
+
 (() => {
     const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
@@ -33,7 +35,7 @@
             try {
                 setMessage('');
 
-                const response = await fetch('/api/auth/login', {
+                const response = await fetch(`${API_BASE}/api/auth/login`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

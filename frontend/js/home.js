@@ -1,3 +1,5 @@
+import { API_BASE } from './helpers/config.js';
+
 const songMap = new Map();
 
 const playSongOnGlobalPlayer = async (globalPlayer, song) => {
@@ -76,7 +78,7 @@ const createSongElement = (tagName, song) => {
         if (!toPlay?.url) {
             // try to fetch fresh data for this song id
             try {
-                const res = await fetch('/api/songs');
+                const res = await fetch(`${API_BASE}/api/songs`);
                 if (res.ok) {
                     const list = await res.json();
                     const found = list.find(s => String(s.id) === songId);
@@ -125,7 +127,7 @@ const getCurrentUserId = () => {
 
 const loadNewUploads = async (newUploadsList) => {
     try {
-        const response = await fetch('/api/songs');
+        const response = await fetch(`${API_BASE}/api/songs`);
 
         if (!response.ok) {
             console.error('Failed to fetch new uploads');
@@ -143,7 +145,7 @@ const loadNewUploads = async (newUploadsList) => {
 
 const loadTopSongs = async (top10List) => {
     try {
-        const topResponse = await fetch('/api/songs/top/rated?limit=10');
+        const topResponse = await fetch(`${API_BASE}/api/songs/top/rated?limit=10`);
 
         if (!topResponse.ok) {
             return;
@@ -166,7 +168,7 @@ const loadPastUploads = async (pastUploadsList) => {
             return;
         }
 
-        const uploadsResponse = await fetch(`/api/songs?userId=${currentUserId}`);
+        const uploadsResponse = await fetch(`${API_BASE}/api/songs?userId=${currentUserId}`);
 
         if (!uploadsResponse.ok) {
             return;
@@ -225,7 +227,7 @@ const initHome = async () => {
             if (!song) {
                 // fallback: fetch song by id
                 try {
-                    const res = await fetch(`/api/songs`);
+                    const res = await fetch(`${API_BASE}/api/songs`);
                     if (res.ok) {
                         const list = await res.json();
                         const found = list.find(s => s.id === songId);

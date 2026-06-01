@@ -1,3 +1,5 @@
+import { API_BASE } from './config.js';
+
 const initTop10 = async () => {
     const listContainer = document.getElementById('top10-list');
 
@@ -7,7 +9,7 @@ const initTop10 = async () => {
 
     try {
         // Fetch top 10 liked songs from backend
-        const response = await fetch('/api/songs/top/rated?limit=10');
+        const response = await fetch(`${API_BASE}/api/songs/top/rated?limit=10`);
         
         if (response.ok) {
             const songs = await response.json();
