@@ -23,8 +23,8 @@
     "coverage": "vitest run --coverage",
     "coverage:backend": "vitest run --coverage backend/tests/**/*.test.js",
     "coverage:frontend": "vitest run --coverage frontend/tests/**/*.test.js",
-    "test:unit": "vitest run backend/tests/unit/**/*.test.js",
-    "test:integration": "vitest run backend/tests/**/*.test.js --testPathIgnorePatterns=backend/tests/unit",
+    "test:unit": "vitest run backend/tests/unit",
+    "test:integration": "vitest run backend/tests/integration",
     "frontend": "vite",
     "backend": "node backend/index.js"
   },
