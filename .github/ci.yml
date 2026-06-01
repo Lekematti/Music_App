@@ -1,0 +1,92 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: testuser
+          POSTGRES_PASSWORD: testpassword
+          POSTGRES_DB: testdb
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      DATABASE_URL: postgresql://testuser:testpassword@localhost:5432/testdb
+      DIRECT_URL: postgresql://testuser:testpassword@localhost:5432/testdb
+      DATABASE_URL_TEST: postgresql://testuser:testpassword@localhost:5432/testdb
+      JWT_SECRET: ${{ secrets.JWT_SECRET }}
+      SUPABASE_URL: https://example.supabase.co
+      SUPABASE_SERVICE_ROLE_KEY: test-key
+      VITE_SUPABASE_URL: https://example.supabase.co
+      VITE_SUPABASE_KEY: test-key
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate Prisma client
+        run: npx prisma generate --config=backend/prisma/prisma.config.ts
+
+      - name: Run database migrations
+        run: npx prisma migrate deploy --config=backend/prisma/prisma.config.ts
+
+      - name: Backend unit tests
+        run: npm run test:unit
+
+      - name: Backend integration tests
+        run: npm run test:integration
+
+      - name: Frontend tests
+        run: npm run test:frontend
+
+      - name: Backend coverage
+        run: npm run coverage:backend
+
+      - name: Frontend coverage
+        run: npm run coverage:frontend
+
+      - name: Validate backend syntax
+        run: node --check backend/index.js
+
+      - name: Build frontend
+        run: npm run build
+        env:
+          VITE_API_BASE_URL: ${{ secrets.VITE_API_BASE_URL }}
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_KEY: ${{ secrets.VITE_SUPABASE_KEY }}
+
+      - name: Upload frontend build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-dist
+          path: frontend/dist
+
+      - name: Upload backend artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-code
+          path: backend
