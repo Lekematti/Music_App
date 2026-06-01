@@ -17,24 +17,34 @@ describe('Focused uploadRoutes tests', () => {
   });
 
   it('returns 500 when supabase is not configured', async () => {
-    // ensure env not set
     delete process.env.SUPABASE_URL;
     delete process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-    // mock protect to inject user
-        // use a real JWT token so protect middleware authorizes the request
-        process.env.JWT_SECRET = 'test-secret';
-        const jwt = require('jsonwebtoken');
-        const token = jwt.sign({ email: 'a@b.com' }, process.env.JWT_SECRET);
+    process.env.JWT_SECRET = 'test-secret';
+    const jwt = require('jsonwebtoken');
+    const token = jwt.sign({ email: 'a@b.com' }, process.env.JWT_SECRET);
 
-        const router = require('../../routes/uploadRoutes');
-        const app = express();
-        app.use(router);
+    const router = require('../../routes/uploadRoutes');
 
-    const res = await request(app).post('/').set('Authorization', `Bearer ${token}`);
+    router.setSupabaseClient(null);
+
+    const prisma = require('../../prisma/prismaClient');
+    prisma.user = { findUnique: async () => ({ id: 'u1', username: 'testuser' }) };
+
+    const app = express();
+    app.use(express.json());
+    app.use(router);
+
+    const res = await request(app)
+        .post('/')
+        .set('Authorization', `Bearer ${token}`)
+        .field('title', 'Test Song')
+        .field('artist', 'Test Artist')
+        .attach('audioFile', Buffer.from('RIFF....'), { filename: 'test.mp3', contentType: 'audio/mpeg' });
+
     expect(res.status).toBe(500);
     expect(res.body).toHaveProperty('message', 'Supabase storage is not configured');
-  });
+});
 
   it('returns 400 when title/artist are missing', async () => {
     process.env.SUPABASE_URL = 'https://example.supabase.co';

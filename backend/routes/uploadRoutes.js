@@ -161,11 +161,6 @@ router.post('/', protect, upload.fields([
     { name: 'imageFile', maxCount: 1 },
 ]), async (req, res) => {
     try {
-        const client = getSupabase();
-        if (!client) {
-            return res.status(500).json({ message: 'Supabase storage is not configured' });
-        }
-
         const titleAndArtist = validateTitleAndArtist(req);
         if (!titleAndArtist.valid) {
             return res.status(400).json({ message: titleAndArtist.error });
@@ -182,6 +177,11 @@ router.post('/', protect, upload.fields([
         const imageValidation = validateImageFile(imageFile);
         if (!imageValidation.valid) {
             return res.status(400).json({ message: imageValidation.error });
+        }
+
+        const client = getSupabase();
+        if (!client) {
+            return res.status(500).json({ message: 'Supabase storage is not configured' });
         }
 
         const user = await prisma.user.findUnique({
@@ -207,7 +207,6 @@ router.post('/', protect, upload.fields([
             if (!imageUpload.success) {
                 return res.status(502).json({ message: imageUpload.error });
             }
-
             imagePath = imageUpload.imagePath;
             imageUrl = imageUpload.imageUrl;
         }
@@ -222,7 +221,6 @@ router.post('/', protect, upload.fields([
             },
         });
 
-        // Write username markers so Supabase UI shows username folders
         try {
             await writeBucketMarker(client, 'songs', user.username, { userId: user.id, songId: newSong.id, audio: audioPath });
             if (imagePath) {

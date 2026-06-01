@@ -30,14 +30,32 @@ describe('Upload + Delete flow', () => {
     let token = '';
     let testUser;
 
+    const mockSupabaseClient = {
+        storage: {
+            from: () => ({
+                upload: async () => ({ error: null }),
+                getPublicUrl: (path) => ({ data: { publicUrl: `https://example.com/${path}` } }),
+                remove: async () => ({ error: null }),
+                download: async () => ({ data: new Blob(['x']), error: null }),
+            }),
+        },
+    };
+
     beforeEach(async () => {
+        // Injektoi mock client suoraan — ohittaa example.supabase.co guardin
+        const uploadRoutes = require('../../routes/uploadRoutes');
+        uploadRoutes.setSupabaseClient(mockSupabaseClient);
+
         testUser = uniqueUser();
         const reg = await request(app).post('/api/auth/register').send(testUser);
         token = reg.body.token;
     });
 
     afterEach(async () => {
-        // cleanup created songs/users
+        // Nollaa mock client
+        const uploadRoutes = require('../../routes/uploadRoutes');
+        uploadRoutes.setSupabaseClient(null);
+
         await prisma.song.deleteMany({ where: { user: { email: testUser.email } } }).catch(() => {});
         await prisma.user.deleteMany({ where: { email: testUser.email } }).catch(() => {});
     });
