@@ -44,10 +44,11 @@ jobs:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
 
+      - name: Install Railway CLI
+        run: npm install -g @railway/cli
+
       - name: Deploy backend to Railway
-        uses: railwayapp/railway-action@v1
-        with:
-          railway_token: ${{ secrets.RAILWAY_TOKEN }}
-          project_id: ${{ secrets.RAILWAY_PROJECT_ID }}
-          environment: production
-          service: backend
+        working-directory: backend
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+        run: railway up --service backend --environment production --detach
