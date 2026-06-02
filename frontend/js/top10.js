@@ -1,4 +1,4 @@
-import { API_BASE } from './config.js';
+import { API_BASE } from './helpers/config.js';
 
 const initTop10 = async () => {
     const listContainer = document.getElementById('top10-list');

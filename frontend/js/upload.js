@@ -1,4 +1,4 @@
-import { API_BASE } from './config.js';
+import { API_BASE } from './helpers/config.js';
 
 const initUpload = () => {
     const uploadForm = document.getElementById('upload-form');

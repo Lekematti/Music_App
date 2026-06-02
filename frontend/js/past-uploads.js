@@ -1,4 +1,4 @@
-import { API_BASE } from './config.js';
+import { API_BASE } from './helpers/config.js';
 
 const initPastUploads = async () => {
     const listContainer = document.getElementById('past-uploads-list');

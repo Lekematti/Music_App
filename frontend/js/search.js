@@ -1,4 +1,4 @@
-import { API_BASE } from './config.js';
+import { API_BASE } from './helpers/config.js';
 
 const createResultItem = (song, index) => {
     const item = document.createElement('list-row-item');

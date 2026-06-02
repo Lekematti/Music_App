@@ -1,4 +1,4 @@
-import { API_BASE } from './config.js';
+import { API_BASE } from './helpers/config.js';
 
 /* eslint-disable no-unused-vars */
 const loadSongById = async (songId) => {
