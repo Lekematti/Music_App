@@ -1,18 +1,19 @@
 import { defineConfig } from 'vite';
 import { resolve } from 'node:path';
-import { viteStaticCopy } from 'vite-plugin-static-copy';
+import copy from 'rollup-plugin-copy';
 
 export default defineConfig({
   root: './frontend',
   envDir: resolve(__dirname),
   plugins: [
-    viteStaticCopy({
+    copy({
       targets: [
         {
-          src: resolve(__dirname, 'frontend/assets/icons') + '/*',
-          dest: 'assets/icons'
+          src: 'frontend/assets/icons/*',
+          dest: 'frontend/dist/assets/icons'
         }
-      ]
+      ],
+      hook: 'writeBundle'
     })
   ],
   build: {
