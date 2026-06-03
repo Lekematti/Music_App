@@ -6,6 +6,11 @@ const { protect } = require('../middleware/authMiddleware'); // Requires authent
 const supabaseUrl = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL || '';
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_KEY || '';
 const { createClient } = require('@supabase/supabase-js');
+const { 
+    attachPlayableUrl,
+    attachPlayableUrls,
+    extractStorageReference,
+} = require('../lib/mediaStorage');
 
 let supabase = null;
 const getSupabase = () => {
@@ -27,92 +32,6 @@ const getSupabase = () => {
 router.setSupabaseClient = (client) => {
     supabase = client;
 };
-
-// (helpers exported at bottom to avoid temporal-deadzone issues)
-
-const mediaProxyUrl = (bucket, objectPath) => `/api/media?bucket=${encodeURIComponent(bucket)}&path=${encodeURIComponent(objectPath)}`;
-
-const extractStorageReference = (storedValue, defaultBucket = 'songs') => {
-    if (typeof storedValue !== 'string' || !storedValue.trim()) {
-        return null;
-    }
-
-    if (!storedValue.startsWith('http')) {
-        return { bucket: defaultBucket, path: storedValue };
-    }
-
-    try {
-        const parsedUrl = new URL(storedValue);
-
-        if (parsedUrl.pathname === '/api/media') {
-            const bucket = parsedUrl.searchParams.get('bucket') || defaultBucket;
-            const path = parsedUrl.searchParams.get('path');
-
-            if (path) {
-                return { bucket, path };
-            }
-        }
-
-        const publicMarker = '/storage/v1/object/public/';
-        const markerIndex = parsedUrl.pathname.indexOf(publicMarker);
-
-        if (markerIndex !== -1) {
-            const publicPath = parsedUrl.pathname.slice(markerIndex + publicMarker.length);
-            const segments = publicPath.split('/').filter(Boolean);
-
-            if (segments.length >= 2) {
-                return {
-                    bucket: segments[0],
-                    path: segments.slice(1).join('/'),
-                };
-            }
-        }
-    } catch (error) {
-        console.error('Failed to extract storage reference:', error);
-    }
-
-    return null;
-};
-
-const toSignedPlaybackUrl = async (storedUrl, defaultBucket = 'songs') => {
-    if (!storedUrl) return storedUrl;
-
-    if (!storedUrl.startsWith('http')) {
-        return mediaProxyUrl(defaultBucket, storedUrl);
-    }
-
-    try {
-        const parsedUrl = new URL(storedUrl);
-        const publicMarker = '/storage/v1/object/public/';
-        const markerIndex = parsedUrl.pathname.indexOf(publicMarker);
-
-        if (markerIndex === -1) {
-            return storedUrl;
-        }
-
-        const publicPath = parsedUrl.pathname.slice(markerIndex + publicMarker.length);
-        const segments = publicPath.split('/').filter(Boolean);
-        if (segments.length < 2) {
-            return storedUrl;
-        }
-
-        const bucket = segments[0];
-        const objectPath = segments.slice(1).join('/');
-        return mediaProxyUrl(bucket, objectPath);
-    } catch (error) {
-        console.error('Failed to create signed playback URL:', error);
-    }
-
-    return storedUrl;
-};
-
-const attachPlayableUrl = async (song) => ({
-    ...song,
-    url: await toSignedPlaybackUrl(song.url, 'songs'),
-    imageUrl: await toSignedPlaybackUrl(song.imageUrl, 'covers'),
-});
-
-const attachPlayableUrls = async (songs) => Promise.all(songs.map(attachPlayableUrl));
 
 const normalizeSearchValue = (value) => (typeof value === 'string' ? value.trim().toLocaleLowerCase() : '');
 
@@ -445,8 +364,3 @@ router.delete('/:id', protect, async (req, res) => {
 });
 
 module.exports = router;
-
-// Export helpers for testing (attached after declarations)
-router.extractStorageReference = extractStorageReference;
-router.toSignedPlaybackUrl = toSignedPlaybackUrl;
-router.attachPlayableUrl = attachPlayableUrl;

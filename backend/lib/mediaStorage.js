@@ -1,4 +1,7 @@
-const mediaProxyUrl = (bucket, objectPath) => `/api/media?bucket=${encodeURIComponent(bucket)}&path=${encodeURIComponent(objectPath)}`;
+const { BACKEND_URL } = require('../lib/config');
+
+const mediaProxyUrl = (bucket, objectPath) => 
+    `${BACKEND_URL}/api/media?bucket=${encodeURIComponent(bucket)}&path=${encodeURIComponent(objectPath)}`;
 
 const extractStorageReference = (storedValue, defaultBucket = 'songs') => {
     if (typeof storedValue !== 'string' || !storedValue.trim()) {
