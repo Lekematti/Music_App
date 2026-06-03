@@ -41,6 +41,7 @@
     "prisma": "7.8.0",
     "supertest": "7.2.2",
     "vite": "8.0.11",
+    "vite-plugin-static-copy": "^4.1.0",
     "vitest": "4.1.5"
   },
   "dependencies": {

@@ -1,9 +1,20 @@
 import { defineConfig } from 'vite';
 import { resolve } from 'node:path';
+import { viteStaticCopy } from 'vite-plugin-static-copy';
 
 export default defineConfig({
   root: './frontend',
   envDir: resolve(__dirname),
+  plugins: [
+    viteStaticCopy({
+      targets: [
+        {
+          src: 'assets/icons',
+          dest: 'assets'
+        }
+      ]
+    })
+  ],
   build: {
     rollupOptions: {
       input: {
