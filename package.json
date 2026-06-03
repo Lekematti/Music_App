@@ -7,8 +7,7 @@
   "type": "commonjs",
   "main": "frontend/index.html",
   "prisma": {
-    "schema": "backend/prisma/schema.prisma",
-    "config": "backend/prisma/prisma.config.ts"
+    "schema": "backend/prisma/schema.prisma"
   },
   "scripts": {
     "dev": "concurrently \"npm run frontend\" \"npm run backend\"",
@@ -38,7 +37,7 @@
     "globals": "^17.6.0",
     "jsdom": "29.1.1",
     "prettier": "^3.8.3",
-    "prisma": "^6.19.3",
+    "prisma": "^7.8.0",
     "rollup-plugin-copy": "^3.5.0",
     "supertest": "7.2.2",
     "vite": "8.0.11",
