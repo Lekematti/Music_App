@@ -19,7 +19,7 @@ const extensionFromMime = {
 const normalizeEmail = (email) => email.trim().toLowerCase();
 const isValidEmail = (email) => EMAIL_REGEX.test(email);
 const generateToken = (id, email) => jwt.sign({ id, email }, process.env.JWT_SECRET, {
-    expiresIn: '30d',
+    expiresIn: '7d',
 });
 
 const supabaseUrl = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;

@@ -1,15 +1,29 @@
-// Check if user is logged in and has a valid token
+const isTokenExpired = (token) => {
+    try {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        return payload.exp * 1000 < Date.now();
+    } catch {
+        return true;
+    }
+};
+
 const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
-const hasToken = localStorage.getItem('token') !== null;
+const token = localStorage.getItem('token');
+const hasToken = token !== null;
 const currentPath = globalThis.location.pathname;
 
-// Allow public access to login and register pages
 const isPublicPage = currentPath.endsWith('login.html') || currentPath.endsWith('register.html');
+const isRootIndex = currentPath.endsWith('/index.html') || currentPath === '/' || currentPath === '';
+const loginPath = isRootIndex ? './pages/login.html' : 'login.html';
 
-if (!isPublicPage && (!isLoggedIn || !hasToken)) {
-    // Define the redirect destination based on current path
-    const isRootIndex = currentPath.endsWith('/index.html') || currentPath === '/' || currentPath === '';
-    const loginPath = isRootIndex ? './pages/login.html' : 'login.html';
+// Redirect if token is expired
+if (!isPublicPage && hasToken && isTokenExpired(token)) {
+    localStorage.removeItem('token');
+    localStorage.removeItem('isLoggedIn');
     globalThis.location.href = loginPath;
 }
-    
+
+// Redirect if not logged in
+if (!isPublicPage && (!isLoggedIn || !hasToken)) {
+    globalThis.location.href = loginPath;
+}
