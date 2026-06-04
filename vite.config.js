@@ -10,10 +10,8 @@ export default defineConfig({
       targets: [
         {
           src:
-            resolve(__dirname, "frontend/assets/icons").replaceAll()(
-              /\\/g,
-              "/",
-            ) + "/*",
+            resolve(__dirname, "frontend/assets/icons").replaceAll("\\", "/") +
+            "/*",
           dest: "assets/icons",
         },
       ],
