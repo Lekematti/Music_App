@@ -16,6 +16,7 @@ export default defineConfig({
         search: resolve(__dirname, "frontend/pages/search.html"),
         upload: resolve(__dirname, "frontend/pages/upload.html"),
         settings: resolve(__dirname, "frontend/pages/settings.html"),
+        info: resolve(__dirname, "frontend/pages/info.html"),
         top10: resolve(__dirname, "frontend/pages/top10.html"),
         "new-uploads": resolve(__dirname, "frontend/pages/new-uploads.html"),
         "past-uploads": resolve(__dirname, "frontend/pages/past-uploads.html"),
