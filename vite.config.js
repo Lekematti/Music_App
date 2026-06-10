@@ -11,6 +11,14 @@ export default defineConfig({
         main: resolve(__dirname, "frontend/index.html"),
         login: resolve(__dirname, "frontend/pages/login.html"),
         register: resolve(__dirname, "frontend/pages/register.html"),
+        "reset-password": resolve(
+          __dirname,
+          "frontend/pages/reset-password.html",
+        ),
+        "forgot-password": resolve(
+          __dirname,
+          "frontend/pages/forgot-password.html",
+        ),
         profile: resolve(__dirname, "frontend/pages/profile.html"),
         song: resolve(__dirname, "frontend/pages/song.html"),
         search: resolve(__dirname, "frontend/pages/search.html"),
