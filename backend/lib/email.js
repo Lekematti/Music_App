@@ -1,8 +1,13 @@
 const { Resend } = require("resend");
 
-const resend = new Resend(process.env.RESEND_API_KEY);
-
 const sendPasswordResetEmail = async (email, resetUrl) => {
+  const apiKey = process.env.RESEND_API_KEY;
+  if (!apiKey) {
+    throw new Error("RESEND_API_KEY is not configured");
+  }
+
+  const resend = new Resend(apiKey);
+
   const { error } = await resend.emails.send({
     from: "Music App <onboarding@resend.dev>",
     to: email,
