@@ -8,6 +8,12 @@ A full-stack music streaming web application where users can register, upload th
 
 ---
 
+## Demo Video
+
+[![Watch the demo](https://img.shields.io/badge/YouTube-Watch%20Demo-red?logo=youtube)](https://youtu.be/On0fH8VtR9U)
+
+---
+
 ## Features
 
 - User registration and login with JWT authentication
