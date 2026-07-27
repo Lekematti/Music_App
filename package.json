@@ -11,6 +11,7 @@
   },
   "scripts": {
     "dev": "concurrently \"npm run frontend\" \"npm run backend\"",
+    "web": "npm --prefix apps/app run web",
     "build": "vite build",
     "preview": "vite preview",
     "lint": "eslint .",

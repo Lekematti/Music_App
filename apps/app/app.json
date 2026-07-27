@@ -6,7 +6,6 @@
     "orientation": "portrait",
     "scheme": "app",
     "userInterfaceStyle": "automatic",
-    
     "android": {
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE"
@@ -23,7 +22,10 @@
         {
           "backgroundColor": "#208AEF"
         }
-      ]
+      ],
+      "expo-image",
+      "expo-status-bar",
+      "expo-web-browser"
     ],
     "experiments": {
       "typedRoutes": true,
