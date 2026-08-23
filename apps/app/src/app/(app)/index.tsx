@@ -10,7 +10,7 @@ import {
 import { router } from "expo-router";
 
 import { apiFetch, setAuthHeaders } from "@/lib/api";
-import { getToken, clearToken } from "@/lib/auth";
+import { getToken } from "@/lib/auth";
 import { usePlayer, type PlayerTrack } from "@/components/player";
 import { homeStyles } from "@/styles/home";
 
@@ -96,13 +96,6 @@ export default function AppHomeScreen() {
       style={homeStyles.screen}
       contentContainerStyle={homeStyles.content}
     >
-      <View style={homeStyles.header}>
-        <Text style={homeStyles.brand}>Music App</Text>
-        <Pressable onPress={handleLogout} style={homeStyles.logoutButton}>
-          <Text style={homeStyles.logoutText}>Logout</Text>
-        </Pressable>
-      </View>
-
       {loading && (
         <View style={homeStyles.loadingWrap}>
           <ActivityIndicator size="large" color="#ffffff" />
@@ -164,11 +157,6 @@ export default function AppHomeScreen() {
       )}
     </ScrollView>
   );
-}
-
-function handleLogout() {
-  clearToken();
-  router.replace("/(auth)/login");
 }
 
 function openSong(

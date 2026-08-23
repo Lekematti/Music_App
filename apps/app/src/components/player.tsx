@@ -9,7 +9,7 @@ import {
   type ReactNode,
 } from "react";
 import { Alert, Pressable, StyleSheet, Text, View } from "react-native";
-import { Audio } from "expo-av";
+import { Audio, type AVPlaybackStatus } from "expo-av";
 
 export type PlayerTrack = {
   id: string;
@@ -31,28 +31,43 @@ const PlayerContext = createContext<PlayerContextValue | undefined>(undefined);
 
 export function PlayerProvider({ children }: { readonly children: ReactNode }) {
   const soundRef = useRef<Audio.Sound | null>(null);
+  const pendingSoundRef = useRef<Audio.Sound | null>(null);
+  const playRequestIdRef = useRef(0);
+
   const [currentTrack, setCurrentTrack] = useState<PlayerTrack | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isReady, setIsReady] = useState(false);
 
+  const unloadSound = useCallback(async (sound: Audio.Sound | null) => {
+    if (!sound) return;
+
+    try {
+      await sound.stopAsync();
+    } catch {
+      // no-op
+    }
+
+    try {
+      await sound.unloadAsync();
+    } catch {
+      // no-op
+    }
+  }, []);
+
   const unloadCurrentSound = useCallback(async () => {
-    if (!soundRef.current) {
+    await unloadSound(soundRef.current);
+    await unloadSound(pendingSoundRef.current);
+    soundRef.current = null;
+    pendingSoundRef.current = null;
+  }, [unloadSound]);
+
+  const onPlaybackStatusUpdate = useCallback((status: AVPlaybackStatus) => {
+    if (!status.isLoaded) {
+      setIsPlaying(false);
       return;
     }
 
-    try {
-      await soundRef.current.stopAsync();
-    } catch {
-      // Ignore stop errors when the sound has already ended or isn't loaded.
-    }
-
-    try {
-      await soundRef.current.unloadAsync();
-    } catch {
-      // Ignore unload errors for stale or already-unloaded sounds.
-    }
-
-    soundRef.current = null;
+    setIsPlaying(status.isPlaying);
   }, []);
 
   const playTrack = useCallback(
@@ -65,20 +80,48 @@ export function PlayerProvider({ children }: { readonly children: ReactNode }) {
         return;
       }
 
+      const requestId = ++playRequestIdRef.current;
       setCurrentTrack(track);
       setIsReady(false);
+      setIsPlaying(false);
+
       await unloadCurrentSound();
 
-      const { sound } = await Audio.Sound.createAsync(
-        { uri: track.url },
-        { shouldPlay: true },
-      );
+      try {
+        const { sound } = await Audio.Sound.createAsync(
+          { uri: track.url },
+          { shouldPlay: true },
+          onPlaybackStatusUpdate,
+          false,
+        );
 
-      soundRef.current = sound;
-      setIsPlaying(true);
-      setIsReady(true);
+        pendingSoundRef.current = sound;
+
+        if (requestId !== playRequestIdRef.current) {
+          await unloadSound(sound);
+          if (pendingSoundRef.current === sound) {
+            pendingSoundRef.current = null;
+          }
+          return;
+        }
+
+        soundRef.current = sound;
+        pendingSoundRef.current = null;
+        setIsReady(true);
+      } catch (error) {
+        if (requestId === playRequestIdRef.current) {
+          setIsReady(false);
+          setIsPlaying(false);
+          Alert.alert(
+            "Playback error",
+            error instanceof Error
+              ? error.message
+              : "Could not start playback.",
+          );
+        }
+      }
     },
-    [unloadCurrentSound],
+    [onPlaybackStatusUpdate, unloadCurrentSound, unloadSound],
   );
 
   const togglePlayback = useCallback(async () => {
@@ -91,17 +134,19 @@ export function PlayerProvider({ children }: { readonly children: ReactNode }) {
 
     const status = await soundRef.current.getStatusAsync();
 
-    if (status.isLoaded && status.isPlaying) {
+    if (!status.isLoaded) {
+      return;
+    }
+
+    if (status.isPlaying) {
       await soundRef.current.pauseAsync();
       setIsPlaying(false);
       return;
     }
 
-    if (status.isLoaded) {
-      await soundRef.current.playAsync();
-      setIsPlaying(true);
-    }
-  }, [currentTrack?.url, playTrack]);
+    await soundRef.current.playAsync();
+    setIsPlaying(true);
+  }, [currentTrack, playTrack]);
 
   useEffect(() => {
     return () => {
