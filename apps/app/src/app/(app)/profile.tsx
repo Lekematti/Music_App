@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
+  Image,
   Pressable,
   ScrollView,
   Text,
@@ -33,7 +34,10 @@ type MeResponse = {
 };
 
 type ProfileTab = "publications" | "password" | "username" | "email";
-
+const publicationIcon = require("../assets/icons/profile.png");
+const settingsIcon = require("../assets/icons/settings.png");
+const logoutIcon = require("../assets/icons/logout.png");
+const deleteIcon = require("../assets/icons/thrash.png");
 export default function ProfileScreen() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -271,16 +275,19 @@ export default function ProfileScreen() {
             active={activeTab === "publications"}
             onPress={() => setActiveTab("publications")}
           />
+
           <SidebarTab
             label="Change password"
             active={activeTab === "password"}
             onPress={() => setActiveTab("password")}
           />
+
           <SidebarTab
             label="Change username"
             active={activeTab === "username"}
             onPress={() => setActiveTab("username")}
           />
+
           <SidebarTab
             label="Change email"
             active={activeTab === "email"}
@@ -484,6 +491,12 @@ function SidebarTab({
       onPress={onPress}
       style={[profileStyles.navItem, active && profileStyles.navItemActive]}
     >
+      <Image
+        source={active ? publicationIcon : settingsIcon}
+        style={profileStyles.navIcon}
+        resizeMode="contain"
+      />
+
       <Text
         style={[profileStyles.navText, active && profileStyles.navTextActive]}
       >

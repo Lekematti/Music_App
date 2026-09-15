@@ -195,9 +195,20 @@ rightSidebar: {
   alignItems: "center",
 },
 navItem: {
+  flexDirection: "row",
+  alignItems: "center",
+  gap: 12,
   borderRadius: 10,
   paddingVertical: 12,
   paddingHorizontal: 12,
+},
+navIcon: {
+  width: 20,
+  height: 20,
+  tintColor: "#ffb547",
+},
+navIconActive: {
+  opacity: 1,
 },
 navItemActive: {
   backgroundColor: "#1f2028",

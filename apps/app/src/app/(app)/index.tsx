@@ -2,9 +2,11 @@ import { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
+  Image,
   Pressable,
   ScrollView,
   Text,
+  useWindowDimensions,
   View,
 } from "react-native";
 import { router } from "expo-router";
@@ -13,6 +15,10 @@ import { apiFetch, setAuthHeaders } from "@/lib/api";
 import { getToken } from "@/lib/auth";
 import { usePlayer, type PlayerTrack } from "@/components/player";
 import { homeStyles } from "@/styles/home";
+
+const { width } = useWindowDimensions();
+const isDesktop = width >= 1000;
+const appLogo = require("../assets/icons/logo.png");
 
 type SongUser = {
   username?: string;
@@ -111,49 +117,64 @@ export default function AppHomeScreen() {
       )}
 
       {!loading && !error && (
-        <>
-          <Section title="Top 10">
-            {topSongs.length === 0 ? (
-              <EmptyState text="No top songs available yet." />
-            ) : (
-              topSongs.map((song) => (
-                <SongRow
-                  key={song.id}
-                  song={song}
-                  onPress={() => openSong(song, playTrack)}
-                />
-              ))
-            )}
-          </Section>
+        <View
+          style={[
+            homeStyles.homeColumns,
+            !isDesktop && homeStyles.homeColumnsMobile,
+          ]}
+        >
+          <View style={homeStyles.discoveryColumn}>
+            <Section title="Top 10">
+              {topSongs.length === 0 ? (
+                <EmptyState text="No top songs available yet." />
+              ) : (
+                topSongs.map((song) => (
+                  <SongRow
+                    key={song.id}
+                    song={song}
+                    onPress={() => openSong(song, playTrack)}
+                  />
+                ))
+              )}
+            </Section>
 
-          <Section title="Past Uploads">
-            {pastUploads.length === 0 ? (
-              <EmptyState text="You haven't uploaded any music yet." />
-            ) : (
-              pastUploads.map((song) => (
-                <SongRow
-                  key={song.id}
-                  song={song}
-                  onPress={() => openSong(song, playTrack)}
-                />
-              ))
-            )}
-          </Section>
+            <Section title="New Songs">
+              {newUploads.length === 0 ? (
+                <EmptyState text="No songs uploaded yet." />
+              ) : (
+                newUploads.map((song) => (
+                  <SongRow
+                    key={song.id}
+                    song={song}
+                    onPress={() => openSong(song, playTrack)}
+                  />
+                ))
+              )}
+            </Section>
+          </View>
 
-          <Section title="New Uploads">
-            {newUploads.length === 0 ? (
-              <EmptyState text="No songs uploaded yet." />
-            ) : (
-              newUploads.map((song) => (
-                <SongRow
-                  key={song.id}
-                  song={song}
-                  onPress={() => openSong(song, playTrack)}
-                />
-              ))
-            )}
-          </Section>
-        </>
+          <View
+            style={[
+              homeStyles.uploadsColumn,
+              !isDesktop && homeStyles.uploadsColumnMobile,
+            ]}
+          >
+            <Section title="My Uploads" compact>
+              {pastUploads.length === 0 ? (
+                <EmptyState text="You haven't uploaded any music yet." />
+              ) : (
+                pastUploads.map((song) => (
+                  <SongRow
+                    key={song.id}
+                    song={song}
+                    compact
+                    onPress={() => openSong(song, playTrack)}
+                  />
+                ))
+              )}
+            </Section>
+          </View>
+        </View>
       )}
     </ScrollView>
   );
@@ -177,16 +198,25 @@ function openSong(
 function Section({
   title,
   children,
+  compact = false,
 }: {
   readonly title: string;
   readonly children: React.ReactNode;
+  readonly compact?: boolean;
 }) {
   return (
-    <View style={homeStyles.section}>
+    <View style={[homeStyles.section, compact && homeStyles.compactSection]}>
       <View style={homeStyles.sectionHeader}>
         <Text style={homeStyles.sectionTitle}>{title}</Text>
       </View>
-      <View style={homeStyles.sectionBody}>{children}</View>
+
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={homeStyles.cardRow}
+      >
+        {children}
+      </ScrollView>
     </View>
   );
 }
@@ -194,12 +224,44 @@ function Section({
 function SongRow({
   song,
   onPress,
+  compact = false,
 }: {
   readonly song: Song;
   readonly onPress: () => void;
+  readonly compact?: boolean;
 }) {
   return (
-    <Pressable style={homeStyles.songCard} onPress={onPress}>
+    <Pressable
+      style={[
+        homeStyles.songCard,
+        compact ? homeStyles.compactSongCard : homeStyles.featuredSongCard,
+      ]}
+      onPress={onPress}
+    >
+      {song.imageUrl ? (
+        <Image
+          source={{ uri: song.imageUrl }}
+          style={[
+            homeStyles.songCover,
+            compact
+              ? homeStyles.compactSongCover
+              : homeStyles.featuredSongCover,
+          ]}
+          resizeMode="cover"
+        />
+      ) : (
+        <View
+          style={[
+            homeStyles.songCoverFallback,
+            compact
+              ? homeStyles.compactSongCover
+              : homeStyles.featuredSongCover,
+          ]}
+        >
+          <Text style={homeStyles.songCoverIcon}>♫</Text>
+        </View>
+      )}
+
       <View style={homeStyles.songInfo}>
         <Text style={homeStyles.songTitle} numberOfLines={1}>
           {song.title}
@@ -209,13 +271,13 @@ function SongRow({
         </Text>
       </View>
 
-      <View style={homeStyles.songMeta}>
+      {!compact && (
         <Text style={homeStyles.songMetaText}>
           {typeof song.averageRating === "number"
-            ? song.averageRating.toFixed(1)
+            ? `${song.averageRating.toFixed(1)} ★`
             : ""}
         </Text>
-      </View>
+      )}
     </Pressable>
   );
 }

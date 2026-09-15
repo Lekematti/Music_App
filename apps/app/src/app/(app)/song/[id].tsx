@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import {
   ActivityIndicator,
+  Image,
   Pressable,
   ScrollView,
   Text,
@@ -136,18 +137,31 @@ export default function SongScreen() {
         }}
       >
         <View style={{ alignItems: "center", gap: 8 }}>
-          <View
-            style={{
-              width: 120,
-              height: 120,
-              borderRadius: 24,
-              backgroundColor: "#23242d",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <Text style={{ color: "#8cbcff", fontSize: 42 }}>♫</Text>
-          </View>
+          {song.imageUrl ? (
+            <Image
+              source={{ uri: song.imageUrl }}
+              resizeMode="cover"
+              style={{
+                width: 220,
+                height: 220,
+                borderRadius: 24,
+                backgroundColor: "#23242d",
+              }}
+            />
+          ) : (
+            <View
+              style={{
+                width: 220,
+                height: 220,
+                borderRadius: 24,
+                backgroundColor: "#23242d",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <Text style={{ color: "#8cbcff", fontSize: 64 }}>♫</Text>
+            </View>
+          )}
           <Text style={{ color: "#ffffff", fontSize: 24, fontWeight: "700" }}>
             {song.title}
           </Text>

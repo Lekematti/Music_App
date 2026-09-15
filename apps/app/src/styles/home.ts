@@ -64,6 +64,7 @@ export const homeStyles = StyleSheet.create({
   },
   section: {
     gap: 12,
+    marginBottom: 32,
   },
   sectionHeader: {
     flexDirection: "row",
@@ -91,17 +92,37 @@ export const homeStyles = StyleSheet.create({
   },
   songInfo: {
     flex: 1,
-    paddingRight: 12,
+    paddingRight: 0,
     gap: 4,
   },
   songTitle: {
     color: "#ffffff",
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: "700",
   },
   songArtist: {
     color: "#b5b5c0",
-    fontSize: 14,
+    fontSize: 13,
+  },
+  songCover: {
+    width: 52,
+    height: 52,
+    borderRadius: 8,
+    backgroundColor: "#23242d",
+    marginRight: 12,
+  },
+  songCoverFallback: {
+    width: 52,
+    height: 52,
+    borderRadius: 8,
+    backgroundColor: "#23242d",
+    alignItems: "center",
+    justifyContent: "center",
+    marginRight: 12,
+  },
+  songCoverIcon: {
+    color: "#8cbcff",
+    fontSize: 24,
   },
   songMeta: {
     minWidth: 44,
@@ -122,5 +143,67 @@ export const homeStyles = StyleSheet.create({
   emptyText: {
     color: "#8f90a0",
     fontSize: 14,
+  },
+  compactSection: {
+    marginTop: 4,
+  },
+  compactSongCard: {
+    width: 190,
+    flexDirection: "column",
+    alignItems: "stretch",
+    padding: 10,
+    borderRadius: 14,
+  },
+  compactSongCover: {
+    width: "100%",
+    height: 130,
+    borderRadius: 10,
+    marginRight: 0,
+    marginBottom: 10,
+  },
+  cardRow: {
+    gap: 12,
+    paddingRight: 20,
+  },
+  featuredSongCard: {
+    width: 220,
+    flexDirection: "column",
+    alignItems: "stretch",
+    justifyContent: "flex-start",
+    padding: 12,
+    borderRadius: 16,
+  },
+
+  featuredSongCover: {
+    width: "100%",
+    height: 190,
+    borderRadius: 12,
+    marginRight: 0,
+    marginBottom: 12,
+  },
+  homeColumns: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    gap: 24,
+  },
+  homeColumnsMobile: {
+    flexDirection: "column",
+  },
+  discoveryColumn: {
+    flex: 1,
+    minWidth: 0,
+    gap: 32,
+  },
+  uploadsColumn: {
+    width: 320,
+  },
+  uploadsColumnMobile: {
+    width: "100%",
+  },
+  homeLogo: {
+    width: 72,
+    height: 72,
+    alignSelf: "center",
+    marginBottom: 8,
   },
 });

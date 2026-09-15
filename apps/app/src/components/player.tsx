@@ -8,7 +8,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { Alert, Pressable, StyleSheet, Text, View } from "react-native";
+import { Alert, Image, Pressable, StyleSheet, Text, View } from "react-native";
 import { Audio, type AVPlaybackStatus } from "expo-av";
 
 export type PlayerTrack = {
@@ -189,6 +189,18 @@ export function PlayerBar() {
 
   return (
     <View style={styles.container}>
+      {currentTrack.imageUrl ? (
+        <Image
+          source={{ uri: currentTrack.imageUrl }}
+          style={styles.cover}
+          resizeMode="cover"
+        />
+      ) : (
+        <View style={styles.coverFallback}>
+          <Text style={styles.coverIcon}>♫</Text>
+        </View>
+      )}
+
       <View style={styles.info}>
         <Text style={styles.title} numberOfLines={1}>
           {currentTrack.title}
@@ -252,5 +264,25 @@ const styles = StyleSheet.create({
     color: "#ffffff",
     fontSize: 14,
     fontWeight: "700",
+  },
+  cover: {
+    width: 48,
+    height: 48,
+    borderRadius: 8,
+    backgroundColor: "#23242d",
+    marginRight: 12,
+  },
+  coverFallback: {
+    width: 48,
+    height: 48,
+    borderRadius: 8,
+    backgroundColor: "#23242d",
+    alignItems: "center",
+    justifyContent: "center",
+    marginRight: 12,
+  },
+  coverIcon: {
+    color: "#8cbcff",
+    fontSize: 22,
   },
 });
